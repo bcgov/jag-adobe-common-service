@@ -18,8 +18,8 @@
         <url>${SPLUNK_HTTP_URL}</url>
         <token>${SPLUNK_TOKEN}</token>
         <index>${SPLUNK_INDEX}</index>
-        <source>coa-application</source>
-        <sourcetype>coa-logs</sourcetype>
+        <source>adobe-common-application</source>
+        <sourcetype>adobe-common-logs</sourcetype>
         <disableCertificateValidation>true</disableCertificateValidation>
         <batch_size_count>1</batch_size_count>
         <connectTimeout>5000</connectTimeout>

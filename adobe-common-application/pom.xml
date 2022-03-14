@@ -193,7 +193,7 @@
     </dependencies>
 
     <build>
-        <finalName>jag-coa-application</finalName>
+        <finalName>jag-adobe-application</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
@@ -246,7 +246,7 @@
                     <excludes>
                         <exclude>**/configuration/WSDLFilter*</exclude>
                         <exclude>**/configuration/HttpServletRequestWrapper.class</exclude>
-                        <exclude>**/CoaApplication.class</exclude>
+                        <exclude>**/AdobeApplication.class</exclude>
                         <exclude>**/ObjectFactory.class</exclude>
                         <exclude>**/Adapter1.class</exclude>
                     </excludes>

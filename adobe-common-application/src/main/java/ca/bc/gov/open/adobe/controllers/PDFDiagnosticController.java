@@ -4,6 +4,7 @@ import ca.bc.gov.open.adobe.diagnostic.PDFDiagnostics;
 import ca.bc.gov.open.adobe.diagnostic.PDFDiagnosticsByReference;
 import ca.bc.gov.open.adobe.diagnostic.PDFDiagnosticsByReferenceResponse;
 import ca.bc.gov.open.adobe.diagnostic.PDFDiagnosticsResponse;
+import ca.bc.gov.open.adobe.models.RequestSuccessLog;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -40,8 +41,12 @@ public class PDFDiagnosticController {
     @ResponsePayload
     public PDFDiagnosticsResponse getPDFDiagnostic(@RequestPayload PDFDiagnostics request)
             throws JsonProcessingException {
-
-        return null;
+        PDFDiagnosticsResponse resp =
+                (PDFDiagnosticsResponse) webServiceTemplate.marshalSendAndReceive(host, request);
+        log.info(
+                objectMapper.writeValueAsString(
+                        new RequestSuccessLog("Request Success", "PDFDiagnostics")));
+        return resp;
     }
 
     @PayloadRoot(namespace = SOAP_NAMESPACE, localPart = "PDFDiagnosticsByReference")
@@ -49,6 +54,12 @@ public class PDFDiagnosticController {
     public PDFDiagnosticsByReferenceResponse getPDFDiagnosticByReference(
             @RequestPayload PDFDiagnosticsByReference request) throws JsonProcessingException {
 
-        return null;
+        PDFDiagnosticsByReferenceResponse resp =
+                (PDFDiagnosticsByReferenceResponse)
+                        webServiceTemplate.marshalSendAndReceive(host, request);
+        log.info(
+                objectMapper.writeValueAsString(
+                        new RequestSuccessLog("Request Success", "PDFDiagnosticsByReference")));
+        return resp;
     }
 }
