@@ -1,0 +1,1 @@
+# jag-adobe-common-service
