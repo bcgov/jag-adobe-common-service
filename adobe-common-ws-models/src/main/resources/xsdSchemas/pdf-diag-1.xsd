@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="http://brooks/AdobeCommonServices.Source.CommonServices.ws.provider:PDFDiagnosticsWS"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns:tns="http://brooks/AdobeCommonServices.Source.CommonServices.ws.provider:PDFDiagnosticsWS">
+
+    <xsd:element name="PDFDiagnostics">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="inputFile" nillable="true" type="xsd:string"/>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="PDFDiagnosticsResponse">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="PDFDiagnosticsReturn" nillable="true" type="xsd:int"/>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="PDFDiagnosticsByReference">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="inputFileUrl" nillable="true" type="xsd:string"/>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="PDFDiagnosticsByReferenceResponse">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="PDFDiagnosticsByReferenceReturn" nillable="true" type="xsd:int"/>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="getPing">
+        <xsd:complexType >
+            <xsd:sequence></xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="getPingResponse">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="status" nillable="true" type="xsd:string"/>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="getHealth">
+        <xsd:complexType>
+            <xsd:sequence/>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="getHealthResponse">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="appid" nillable="true" type="xsd:string"/>
+                <xsd:element name="method" nillable="true" type="xsd:string"/>
+                <xsd:element name="status" nillable="true" type="xsd:string"/>
+                <xsd:element name="host" nillable="true" type="xsd:string"/>
+                <xsd:element name="instance" nillable="true" type="xsd:string"/>
+                <xsd:element name="version" nillable="true" type="xsd:string"/>
+                <xsd:element name="compatibility" nillable="true" type="xsd:string"/>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+
+</xsd:schema>
+

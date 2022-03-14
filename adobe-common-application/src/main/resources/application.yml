@@ -1,0 +1,13 @@
+security:
+  basic-auth:
+    password: ${BASIC_AUTH_PASS}
+    username: ${BASIC_AUTH_USER}
+adobe:
+  lifecycle-host: ${LIFECYCLE_HOST}
+  host: ${ORDS_HOST}
+management:
+  endpoints:
+    web:
+      exposure:
+        include: metrics,prometheus,health
+
