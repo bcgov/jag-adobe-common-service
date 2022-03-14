@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema
+        targetNamespace="http://brooks/AdobeCommonServices.Source.CommonServices.ws.provider:PDFTransformationsSCPWS"
+        xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+        xmlns:tns="http://brooks/AdobeCommonServices.Source.CommonServices.ws.provider:PDFTransformationsSCPWS">
+
+    <xsd:element name="PDFTransformations">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="inputFileUrl" nillable="true" type="xsd:string"/>
+                <xsd:element name="flags" nillable="true" type="xsd:int"/>
+                <xsd:element name="remotehost" nillable="true" type="xsd:string"/>
+                <xsd:element name="remotefile" nillable="true" type="xsd:string"/>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="PDFTransformationsResponse">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="statusVal" nillable="true" type="xsd:int"/>
+                <xsd:element name="statusMsg" nillable="true" type="xsd:string"/>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:complexType name="PDFTransformations2">
+        <xsd:sequence>
+            <xsd:element name="inputFile" nillable="true" type="xsd:string"/>
+            <xsd:element name="flags" nillable="true" type="xsd:int"/>
+            <xsd:element name="remotehost" nillable="true" type="xsd:string"/>
+            <xsd:element name="remotefile" nillable="true" type="xsd:string"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="PDFTransformationsResponse2">
+        <xsd:sequence>
+            <xsd:element name="statusVal" nillable="true" type="xsd:int"/>
+            <xsd:element name="statusMsg" nillable="true" type="xsd:string"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+</xsd:schema>
