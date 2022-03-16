@@ -1,7 +1,5 @@
 package ca.bc.gov.open.adobe.controllers;
 
-import ca.bc.gov.open.adobe.diagnostic.PDFDiagnosticsByReference;
-import ca.bc.gov.open.adobe.exceptions.AdobeLCGException;
 import ca.bc.gov.open.adobe.models.OrdsErrorLog;
 import ca.bc.gov.open.adobe.models.RequestSuccessLog;
 import ca.bc.gov.open.adobe.scp.PDFTransformations;
@@ -61,7 +59,7 @@ public class PDFTransformSCPController {
             f = new File(tempFileDir + "TmpPDF" + UUID.randomUUID() + ".pdf");
             FileUtils.writeByteArrayToFile(f, decodedContent);
 
-            // SCP the file to a server
+            // TODO SCP the file to a server
             String host = "", dest = "";
             scpTransfer(dest, host, f);
 
@@ -81,7 +79,10 @@ public class PDFTransformSCPController {
                                     "PDFTransformations",
                                     ex.getMessage(),
                                     null)));
-            throw new AdobeLCGException();
+            var out = new PDFTransformationsResponse();
+            out.setStatusVal(0);
+            out.setStatusMsg(ex.getMessage());
+            return out;
         } finally {
             if (f != null && f.exists()) {
                 if (!f.delete()) {
@@ -91,7 +92,38 @@ public class PDFTransformSCPController {
         }
     }
 
-    private boolean scpTransfer(String host, String dest, File payload) throws IOException {
+    @PayloadRoot(namespace = SOAP_NAMESPACE, localPart = "PDFDiagnosticsByReference")
+    @ResponsePayload
+    public PDFTransformationsResponse pdfTransformSCPByReference(
+            @RequestPayload PDFTransformations request) throws JsonProcessingException {
+
+        try {
+
+            Object resp = webServiceTemplate.marshalSendAndReceive(host, request);
+            log.info(
+                    objectMapper.writeValueAsString(
+                            new RequestSuccessLog("Request Success", "PDFDiagnosticsByReference")));
+
+            var out = new PDFTransformationsResponse();
+            out.setStatusMsg("ok");
+            out.setStatusVal(1);
+            return out;
+        } catch (Exception ex) {
+            log.error(
+                    objectMapper.writeValueAsString(
+                            new OrdsErrorLog(
+                                    "Failed to send message to adobe LCG",
+                                    "PDFDiagnosticsByReference",
+                                    ex.getMessage(),
+                                    null)));
+            var out = new PDFTransformationsResponse();
+            out.setStatusVal(0);
+            out.setStatusMsg(ex.getMessage());
+            return out;
+        }
+    }
+
+    public boolean scpTransfer(String host, String dest, File payload) throws IOException {
         ssh.connect(host);
         try {
 
@@ -108,13 +140,5 @@ public class PDFTransformSCPController {
         }
 
         return false;
-    }
-
-    @PayloadRoot(namespace = SOAP_NAMESPACE, localPart = "PDFDiagnosticsByReference")
-    @ResponsePayload
-    public PDFTransformationsResponse getPDFDiagnosticByReference(
-            @RequestPayload PDFDiagnosticsByReference request) throws JsonProcessingException {
-
-        return null;
     }
 }

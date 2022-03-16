@@ -1,5 +1,7 @@
 package ca.bc.gov.open.adobe.controllers;
 
+import ca.bc.gov.open.adobe.models.OrdsErrorLog;
+import ca.bc.gov.open.adobe.models.RequestSuccessLog;
 import ca.bc.gov.open.adobe.ws.PDFTransformations;
 import ca.bc.gov.open.adobe.ws.PDFTransformationsResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -36,17 +38,67 @@ public class PDFTransformWSController {
 
     @PayloadRoot(namespace = SOAP_NAMESPACE, localPart = "PDFTransformations")
     @ResponsePayload
-    public PDFTransformationsResponse getPDFDiagnostic(@RequestPayload PDFTransformations request)
+    public PDFTransformationsResponse transformPDFWS(@RequestPayload PDFTransformations request)
             throws JsonProcessingException {
+        try {
+            String resp = (String) webServiceTemplate.marshalSendAndReceive(host, request);
+            PDFTransformationsResponse out = new PDFTransformationsResponse();
+            out.setStatusVal(1);
+            out.setStatusMsg("ok");
+            out.setOutputFile(resp);
 
-        return null;
+            log.info(
+                    objectMapper.writeValueAsString(
+                            new RequestSuccessLog("Request Success", "PDFTransformations")));
+
+            return out;
+
+        } catch (Exception ex) {
+            log.error(
+                    objectMapper.writeValueAsString(
+                            new OrdsErrorLog(
+                                    "Failed to send message to adobe LCG",
+                                    "PDFTransformations",
+                                    ex.getMessage(),
+                                    null)));
+            PDFTransformationsResponse out = new PDFTransformationsResponse();
+            out.setStatusVal(0);
+            out.setStatusMsg(ex.getMessage());
+            return out;
+        }
     }
 
     @PayloadRoot(namespace = SOAP_NAMESPACE, localPart = "PDFTransformationsByReference")
     @ResponsePayload
-    public PDFTransformationsResponse getPDFDiagnosticByReference(
+    public PDFTransformationsResponse transformPDFByReference(
             @RequestPayload PDFTransformations request) throws JsonProcessingException {
 
-        return null;
+        try {
+            String resp = (String) webServiceTemplate.marshalSendAndReceive(host, request);
+            PDFTransformationsResponse out = new PDFTransformationsResponse();
+            out.setStatusVal(1);
+            out.setStatusMsg("ok");
+            out.setOutputFile(resp);
+
+            log.info(
+                    objectMapper.writeValueAsString(
+                            new RequestSuccessLog(
+                                    "Request Success", "PDFTransformationsByReference")));
+
+            return out;
+
+        } catch (Exception ex) {
+            log.error(
+                    objectMapper.writeValueAsString(
+                            new OrdsErrorLog(
+                                    "Failed to send message to adobe LCG",
+                                    "PDFTransformationsByReference",
+                                    ex.getMessage(),
+                                    null)));
+            PDFTransformationsResponse out = new PDFTransformationsResponse();
+            out.setStatusVal(0);
+            out.setStatusMsg(ex.getMessage());
+            return out;
+        }
     }
 }

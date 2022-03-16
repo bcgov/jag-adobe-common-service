@@ -4,6 +4,7 @@ import ca.bc.gov.open.adobe.diagnostic.PDFDiagnostics;
 import ca.bc.gov.open.adobe.diagnostic.PDFDiagnosticsByReference;
 import ca.bc.gov.open.adobe.diagnostic.PDFDiagnosticsByReferenceResponse;
 import ca.bc.gov.open.adobe.diagnostic.PDFDiagnosticsResponse;
+import ca.bc.gov.open.adobe.models.OrdsErrorLog;
 import ca.bc.gov.open.adobe.models.RequestSuccessLog;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -41,25 +42,53 @@ public class PDFDiagnosticController {
     @ResponsePayload
     public PDFDiagnosticsResponse getPDFDiagnostic(@RequestPayload PDFDiagnostics request)
             throws JsonProcessingException {
-        PDFDiagnosticsResponse resp =
-                (PDFDiagnosticsResponse) webServiceTemplate.marshalSendAndReceive(host, request);
-        log.info(
-                objectMapper.writeValueAsString(
-                        new RequestSuccessLog("Request Success", "PDFDiagnostics")));
-        return resp;
+        try {
+            PDFDiagnosticsResponse resp =
+                    (PDFDiagnosticsResponse)
+                            webServiceTemplate.marshalSendAndReceive(host, request);
+            log.info(
+                    objectMapper.writeValueAsString(
+                            new RequestSuccessLog("Request Success", "PDFDiagnostics")));
+            return resp;
+        } catch (Exception ex) {
+            log.error(
+                    objectMapper.writeValueAsString(
+                            new OrdsErrorLog(
+                                    "Failed to get pdf diagnostic",
+                                    "PDFDiagnostics",
+                                    ex.getMessage(),
+                                    null)));
+
+            PDFDiagnosticsResponse out = new PDFDiagnosticsResponse();
+            out.setPDFDiagnosticsReturn(0);
+            return out;
+        }
     }
 
     @PayloadRoot(namespace = SOAP_NAMESPACE, localPart = "PDFDiagnosticsByReference")
     @ResponsePayload
     public PDFDiagnosticsByReferenceResponse getPDFDiagnosticByReference(
             @RequestPayload PDFDiagnosticsByReference request) throws JsonProcessingException {
+        try {
+            PDFDiagnosticsByReferenceResponse resp =
+                    (PDFDiagnosticsByReferenceResponse)
+                            webServiceTemplate.marshalSendAndReceive(host, request);
+            log.info(
+                    objectMapper.writeValueAsString(
+                            new RequestSuccessLog("Request Success", "PDFDiagnosticsByReference")));
+            return resp;
+        } catch (Exception ex) {
+            log.error(
+                    objectMapper.writeValueAsString(
+                            new OrdsErrorLog(
+                                    "Failed to get pdf diagnostic",
+                                    "PDFDiagnosticsByReference",
+                                    ex.getMessage(),
+                                    null)));
 
-        PDFDiagnosticsByReferenceResponse resp =
-                (PDFDiagnosticsByReferenceResponse)
-                        webServiceTemplate.marshalSendAndReceive(host, request);
-        log.info(
-                objectMapper.writeValueAsString(
-                        new RequestSuccessLog("Request Success", "PDFDiagnosticsByReference")));
-        return resp;
+            PDFDiagnosticsByReferenceResponse out = new PDFDiagnosticsByReferenceResponse();
+            out.setPDFDiagnosticsByReferenceReturn(0);
+            return out;
+        }
     }
 }

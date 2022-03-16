@@ -29,6 +29,7 @@
     <modules>
         <module>adobe-common-ws-models</module>
         <module>adobe-common-application</module>
+        <module>adobe-code-coverage</module>
     </modules>
 
     <build>
