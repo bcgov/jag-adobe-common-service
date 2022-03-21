@@ -60,8 +60,7 @@ public class PDFTransformSCPController {
             FileUtils.writeByteArrayToFile(f, decodedContent);
 
             // TODO SCP the file to a server
-            String host = "", dest = "";
-            scpTransfer(dest, host, f);
+            scpTransfer(request.getRemotefile(), request.getRemotehost(), f);
 
             // Return the good response
             log.info(
