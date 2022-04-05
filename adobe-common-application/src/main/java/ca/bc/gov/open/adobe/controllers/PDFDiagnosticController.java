@@ -42,13 +42,20 @@ public class PDFDiagnosticController {
     @ResponsePayload
     public PDFDiagnosticsResponse getPDFDiagnostic(@RequestPayload PDFDiagnostics request)
             throws JsonProcessingException {
+
+        PDFDiagnosticsResponse resp = new PDFDiagnosticsResponse();
         try {
-            PDFDiagnosticsResponse resp =
-                    (PDFDiagnosticsResponse)
-                            webServiceTemplate.marshalSendAndReceive(host, request);
+            resp = (PDFDiagnosticsResponse) webServiceTemplate.marshalSendAndReceive(host, request);
+
+            if (resp.getPDFDiagnosticsReturn() != 0) {
+                throw new RuntimeException();
+            }
+
             log.info(
                     objectMapper.writeValueAsString(
                             new RequestSuccessLog("Request Success", "PDFDiagnostics")));
+
+            resp.setPDFDiagnosticsReturn(1);
             return resp;
         } catch (Exception ex) {
             log.error(
@@ -59,9 +66,8 @@ public class PDFDiagnosticController {
                                     ex.getMessage(),
                                     null)));
 
-            PDFDiagnosticsResponse out = new PDFDiagnosticsResponse();
-            out.setPDFDiagnosticsReturn(0);
-            return out;
+            resp.setPDFDiagnosticsReturn(0);
+            return resp;
         }
     }
 
@@ -69,13 +75,20 @@ public class PDFDiagnosticController {
     @ResponsePayload
     public PDFDiagnosticsByReferenceResponse getPDFDiagnosticByReference(
             @RequestPayload PDFDiagnosticsByReference request) throws JsonProcessingException {
+        PDFDiagnosticsByReferenceResponse resp = new PDFDiagnosticsByReferenceResponse();
         try {
-            PDFDiagnosticsByReferenceResponse resp =
+            resp =
                     (PDFDiagnosticsByReferenceResponse)
                             webServiceTemplate.marshalSendAndReceive(host, request);
+
+            if (resp.getPDFDiagnosticsByReferenceReturn() != 0) {
+                throw new RuntimeException();
+            }
+
             log.info(
                     objectMapper.writeValueAsString(
                             new RequestSuccessLog("Request Success", "PDFDiagnosticsByReference")));
+            resp.setPDFDiagnosticsByReferenceReturn(1);
             return resp;
         } catch (Exception ex) {
             log.error(
@@ -86,9 +99,8 @@ public class PDFDiagnosticController {
                                     ex.getMessage(),
                                     null)));
 
-            PDFDiagnosticsByReferenceResponse out = new PDFDiagnosticsByReferenceResponse();
-            out.setPDFDiagnosticsByReferenceReturn(0);
-            return out;
+            resp.setPDFDiagnosticsByReferenceReturn(0);
+            return resp;
         }
     }
 }

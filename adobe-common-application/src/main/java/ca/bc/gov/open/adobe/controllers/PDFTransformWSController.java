@@ -8,7 +8,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.util.Base64Utils;
 import org.springframework.ws.client.core.WebServiceTemplate;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
@@ -31,21 +33,29 @@ public class PDFTransformWSController {
 
     @Autowired
     public PDFTransformWSController(
-            ObjectMapper objectMapper, WebServiceTemplate webServiceTemplate) {
+            ObjectMapper objectMapper,
+            @Qualifier("transformWS") WebServiceTemplate webServiceTemplate) {
         this.objectMapper = objectMapper;
         this.webServiceTemplate = webServiceTemplate;
     }
 
     @PayloadRoot(namespace = SOAP_NAMESPACE, localPart = "PDFTransformations")
     @ResponsePayload
-    public PDFTransformationsResponse transformPDFWS(@RequestPayload PDFTransformations request)
+    public PDFTransformationsResponse transformPDFWS(
+            @RequestPayload ca.bc.gov.open.adobe.gateway.PDFTransformations request)
             throws JsonProcessingException {
+        PDFTransformationsResponse out = new PDFTransformationsResponse();
         try {
-            String resp = (String) webServiceTemplate.marshalSendAndReceive(host, request);
-            PDFTransformationsResponse out = new PDFTransformationsResponse();
+            ca.bc.gov.open.adobe.gateway.PDFTransformationsResponse resp =
+                    (ca.bc.gov.open.adobe.gateway.PDFTransformationsResponse)
+                            webServiceTemplate.marshalSendAndReceive(host, request);
+
             out.setStatusVal(1);
             out.setStatusMsg("ok");
-            out.setOutputFile(resp);
+
+            String pdf = Base64Utils.encodeToString(resp.getPDFTransformationsReturn());
+
+            out.setOutputFile(pdf);
 
             log.info(
                     objectMapper.writeValueAsString(
@@ -61,7 +71,6 @@ public class PDFTransformWSController {
                                     "PDFTransformations",
                                     ex.getMessage(),
                                     null)));
-            PDFTransformationsResponse out = new PDFTransformationsResponse();
             out.setStatusVal(0);
             out.setStatusMsg(ex.getMessage());
             return out;
@@ -73,12 +82,18 @@ public class PDFTransformWSController {
     public PDFTransformationsResponse transformPDFByReference(
             @RequestPayload PDFTransformations request) throws JsonProcessingException {
 
+        PDFTransformationsResponse out = new PDFTransformationsResponse();
         try {
-            String resp = (String) webServiceTemplate.marshalSendAndReceive(host, request);
-            PDFTransformationsResponse out = new PDFTransformationsResponse();
+            ca.bc.gov.open.adobe.gateway.PDFTransformationsResponse resp =
+                    (ca.bc.gov.open.adobe.gateway.PDFTransformationsResponse)
+                            webServiceTemplate.marshalSendAndReceive(host, request);
+
             out.setStatusVal(1);
             out.setStatusMsg("ok");
-            out.setOutputFile(resp);
+
+            String pdf = Base64Utils.encodeToString(resp.getPDFTransformationsReturn());
+
+            out.setOutputFile(pdf);
 
             log.info(
                     objectMapper.writeValueAsString(
@@ -95,7 +110,6 @@ public class PDFTransformWSController {
                                     "PDFTransformationsByReference",
                                     ex.getMessage(),
                                     null)));
-            PDFTransformationsResponse out = new PDFTransformationsResponse();
             out.setStatusVal(0);
             out.setStatusMsg(ex.getMessage());
             return out;

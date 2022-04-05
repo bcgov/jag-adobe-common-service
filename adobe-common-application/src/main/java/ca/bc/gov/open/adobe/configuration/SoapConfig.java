@@ -61,7 +61,8 @@ public class SoapConfig extends WsConfigurerAdapter {
         return objectMapper;
     }
 
-    @Bean
+    @Bean(name = "defaultWS")
+    @Primary
     public WebServiceTemplate webServiceTemplate() {
         WebServiceTemplate webServiceTemplate = new WebServiceTemplate();
         Jaxb2Marshaller jaxb2Marshaller = new Jaxb2Marshaller();
@@ -70,6 +71,18 @@ public class SoapConfig extends WsConfigurerAdapter {
                 "ca.bc.gov.open.adobe.ws",
                 "ca.bc.gov.open.adobe.scp",
                 "ca.bc.gov.open.adobe.diagnostic");
+        webServiceTemplate.setMarshaller(jaxb2Marshaller);
+        webServiceTemplate.setUnmarshaller(jaxb2Marshaller);
+        webServiceTemplate.afterPropertiesSet();
+        return webServiceTemplate;
+    }
+
+    @Bean(name = "transformWS")
+    public WebServiceTemplate webServiceTemplateTransform() {
+        WebServiceTemplate webServiceTemplate = new WebServiceTemplate();
+        Jaxb2Marshaller jaxb2Marshaller = new Jaxb2Marshaller();
+        webServiceTemplate.setMessageFactory(messageFactory());
+        jaxb2Marshaller.setContextPaths("ca.bc.gov.open.adobe.gateway");
         webServiceTemplate.setMarshaller(jaxb2Marshaller);
         webServiceTemplate.setUnmarshaller(jaxb2Marshaller);
         webServiceTemplate.afterPropertiesSet();

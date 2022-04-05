@@ -27,7 +27,8 @@ public class TransformWSTests {
     @Test
     public void transformPDFWSSuccessTest() throws JsonProcessingException {
 
-        PDFTransformations req = new PDFTransformations();
+        ca.bc.gov.open.adobe.gateway.PDFTransformations req =
+                new ca.bc.gov.open.adobe.gateway.PDFTransformations();
         req.setInputFile("AAA");
         req.setFlags(1);
 
@@ -64,7 +65,8 @@ public class TransformWSTests {
     @Test
     public void transformPDFWSFailTest() throws JsonProcessingException {
 
-        PDFTransformations req = new PDFTransformations();
+        ca.bc.gov.open.adobe.gateway.PDFTransformations req =
+                new ca.bc.gov.open.adobe.gateway.PDFTransformations();
         req.setInputFile("AAA");
         req.setFlags(1);
 

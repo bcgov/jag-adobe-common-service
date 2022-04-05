@@ -1,0 +1,24 @@
+<xsd:schema targetNamespace="http://brooks/AdobeCommonServices.Source.CommonServices.ws.provider:PDFTransformationsWS"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns:tns="http://brooks/AdobeCommonServices.Source.CommonServices.ws.provider:PDFTransformationsWS">
+
+
+    <xsd:element name="PDFTransformationsResponse">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="PDFTransformationsReturn" type="xsd:base64Binary"/>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="PDFTransformations">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="inputFile" nillable="true" type="xsd:string"/>
+                <xsd:element name="flags" nillable="true" type="xsd:int"/>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+
+
+</xsd:schema>

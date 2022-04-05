@@ -24,6 +24,7 @@ import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
 @Endpoint
 @Slf4j
+// At the time of the writing of this class this functionality was not used
 public class PDFTransformSCPController {
 
     @Value("${adobe.lifecycle-host}")
