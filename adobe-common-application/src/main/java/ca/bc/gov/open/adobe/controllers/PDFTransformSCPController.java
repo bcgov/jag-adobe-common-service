@@ -43,7 +43,6 @@ public class PDFTransformSCPController {
     public PDFTransformSCPController(
             ObjectMapper objectMapper, WebServiceTemplate webServiceTemplate) throws IOException {
         ssh = new SSHClient();
-        ssh.loadKnownHosts();
         this.objectMapper = objectMapper;
         this.webServiceTemplate = webServiceTemplate;
     }
@@ -124,6 +123,7 @@ public class PDFTransformSCPController {
     }
 
     public boolean scpTransfer(String host, String dest, File payload) throws IOException {
+        ssh.loadKnownHosts();
         ssh.connect(host);
         try {
 
