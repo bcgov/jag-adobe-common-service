@@ -115,11 +115,11 @@ objects:
                 secretKeyRef:
                   name: adobe-common-service-splunk-config
                   key: SPLUNK_INDEX
-            - name: ORDS_HOST
+            - name: LIFECYCLE_HOST
               valueFrom:
                 secretKeyRef:
                   name: adobe-common-service-application-secrets
-                  key: ORDS_HOST
+                  key: LIFECYCLE_HOST
             resources:
               limits:
                 cpu: 500m
