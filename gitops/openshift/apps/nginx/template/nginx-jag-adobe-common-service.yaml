@@ -168,7 +168,7 @@ objects:
               defaultMode: 420
         containers:
           - name: ${COMPONENT_NAME}
-          # Below Immage url must be changed as per gold cluster image stream
+          # Below Image url must be changed as per gold cluster image stream
             image: >-
               image-registry.openshift-image-registry.svc:5000/${OC_NAMESPACE}-tools/${COMPONENT_NAME}:latest
             ports:
