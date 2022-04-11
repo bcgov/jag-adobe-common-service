@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -36,7 +37,8 @@ public class TransformSCPTests {
         req.setInputFileUrl("A");
         req.setRemotehost("A");
 
-        controller = new PDFTransformSCPController(objectMapper, webServiceTemplate);
+        controller =
+                new PDFTransformSCPController(objectMapper, webServiceTemplate, new ModelMapper());
         controller = spy(controller);
 
         byte[] a = "AAAAAAAAAA".getBytes(StandardCharsets.UTF_8);
@@ -64,7 +66,8 @@ public class TransformSCPTests {
                         Mockito.anyString(), Mockito.any(PDFTransformations.class)))
                 .thenReturn(a);
 
-        controller = new PDFTransformSCPController(objectMapper, webServiceTemplate);
+        controller =
+                new PDFTransformSCPController(objectMapper, webServiceTemplate, new ModelMapper());
         var resp = controller.pdfTransformSCPByReference(req);
 
         Assertions.assertNotNull(resp);
@@ -79,7 +82,8 @@ public class TransformSCPTests {
                         Mockito.anyString(), Mockito.any(PDFTransformations.class)))
                 .thenThrow(new AdobeLCGException());
 
-        controller = new PDFTransformSCPController(objectMapper, webServiceTemplate);
+        controller =
+                new PDFTransformSCPController(objectMapper, webServiceTemplate, new ModelMapper());
         var resp = controller.pdfTransformSCPByReference(req);
 
         Assertions.assertNotNull(resp);
@@ -93,7 +97,8 @@ public class TransformSCPTests {
         req.setInputFileUrl("A");
         req.setRemotehost("A");
 
-        controller = new PDFTransformSCPController(objectMapper, webServiceTemplate);
+        controller =
+                new PDFTransformSCPController(objectMapper, webServiceTemplate, new ModelMapper());
         controller = spy(controller);
 
         when(webServiceTemplate.marshalSendAndReceive(

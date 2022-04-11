@@ -13,9 +13,10 @@ import lombok.extern.slf4j.Slf4j;
 import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.xfer.FileSystemFile;
 import org.apache.commons.io.FileUtils;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.util.Base64Utils;
 import org.springframework.ws.client.core.WebServiceTemplate;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
@@ -38,11 +39,17 @@ public class PDFTransformSCPController {
     private final WebServiceTemplate webServiceTemplate;
     private final String tempFileDir = "temp-pdfs/";
     private final SSHClient ssh;
+    private final ModelMapper mapper;
 
     @Autowired
     public PDFTransformSCPController(
-            ObjectMapper objectMapper, WebServiceTemplate webServiceTemplate) throws IOException {
+            ObjectMapper objectMapper,
+            @Qualifier("transformWS") WebServiceTemplate webServiceTemplate,
+            ModelMapper mapper)
+            throws IOException {
+        this.mapper = mapper;
         ssh = new SSHClient();
+        ssh.loadKnownHosts();
         this.objectMapper = objectMapper;
         this.webServiceTemplate = webServiceTemplate;
     }
@@ -54,10 +61,15 @@ public class PDFTransformSCPController {
         File f = null;
         try {
             // Post File to LCG and convert from base64 encode then write to a file
-            byte[] gatewayResp = (byte[]) webServiceTemplate.marshalSendAndReceive(host, request);
-            byte[] decodedContent = Base64Utils.decode(gatewayResp);
+            var gatewayResp =
+                    (ca.bc.gov.open.adobe.gateway.PDFTransformationsResponse)
+                            webServiceTemplate.marshalSendAndReceive(
+                                    host,
+                                    mapper.map(
+                                            request,
+                                            ca.bc.gov.open.adobe.gateway.PDFTransformations.class));
             f = new File(tempFileDir + "TmpPDF" + UUID.randomUUID() + ".pdf");
-            FileUtils.writeByteArrayToFile(f, decodedContent);
+            FileUtils.writeByteArrayToFile(f, gatewayResp.getPDFTransformationsReturn());
 
             // TODO SCP the file to a server
             scpTransfer(request.getRemotefile(), request.getRemotehost(), f);
@@ -123,7 +135,7 @@ public class PDFTransformSCPController {
     }
 
     public boolean scpTransfer(String host, String dest, File payload) throws IOException {
-        ssh.loadKnownHosts();
+
         ssh.connect(host);
         try {
 

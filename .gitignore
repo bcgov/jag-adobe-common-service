@@ -40,4 +40,5 @@ cc-test-reporter
 /soapui-errors.log
 /global-groovy.log
 /comparison-tool/results/*.txt
+/temp-pdfs
 
