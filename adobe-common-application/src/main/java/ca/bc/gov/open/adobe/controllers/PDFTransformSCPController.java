@@ -25,7 +25,6 @@ import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
 @Endpoint
 @Slf4j
-// At the time of the writing of this class this functionality was not used
 public class PDFTransformSCPController {
 
     @Value("${adobe.lifecycle-host}")
@@ -72,7 +71,7 @@ public class PDFTransformSCPController {
             FileUtils.writeByteArrayToFile(f, gatewayResp.getPDFTransformationsReturn());
 
             // TODO SCP the file to a server
-            scpTransfer(request.getRemotefile(), request.getRemotehost(), f);
+            scpTransfer(request.getRemotehost(), request.getRemotefile(), f);
 
             // Return the good response
             log.info(
@@ -103,7 +102,7 @@ public class PDFTransformSCPController {
         }
     }
 
-    @PayloadRoot(namespace = SOAP_NAMESPACE, localPart = "PDFDiagnosticsByReference")
+    @PayloadRoot(namespace = SOAP_NAMESPACE, localPart = "PDFTransformations")
     @ResponsePayload
     public PDFTransformationsResponse pdfTransformSCPByReference(
             @RequestPayload PDFTransformations request) throws JsonProcessingException {
@@ -113,7 +112,7 @@ public class PDFTransformSCPController {
             Object resp = webServiceTemplate.marshalSendAndReceive(host, request);
             log.info(
                     objectMapper.writeValueAsString(
-                            new RequestSuccessLog("Request Success", "PDFDiagnosticsByReference")));
+                            new RequestSuccessLog("Request Success", "PDFTransformations")));
 
             var out = new PDFTransformationsResponse();
             out.setStatusMsg("ok");
@@ -124,7 +123,7 @@ public class PDFTransformSCPController {
                     objectMapper.writeValueAsString(
                             new OrdsErrorLog(
                                     "Failed to send message to adobe LCG",
-                                    "PDFDiagnosticsByReference",
+                                    "PDFTransformations",
                                     ex.getMessage(),
                                     null)));
             var out = new PDFTransformationsResponse();
