@@ -42,3 +42,5 @@ cc-test-reporter
 /comparison-tool/results/*.txt
 /temp-pdfs
 
+/AdobeCommonServicePDFDiagnosticsWS-soapui-project.xml
+/AdobeCSpdfTransformationWS-soapui-project.xml
