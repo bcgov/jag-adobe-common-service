@@ -41,3 +41,5 @@ cc-test-reporter
 /global-groovy.log
 /comparison-tool/results/*.txt
 
+/AdobeCommonServicePDFDiagnosticsWS-soapui-project.xml
+/AdobeCSpdfTransformationWS-soapui-project.xml
