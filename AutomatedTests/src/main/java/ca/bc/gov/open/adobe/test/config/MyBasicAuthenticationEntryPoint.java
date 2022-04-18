@@ -1,4 +1,4 @@
-package ca.bc.gov.open.ccd.test.config;
+package ca.bc.gov.open.adobe.test.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
@@ -40,7 +40,7 @@ public class MyBasicAuthenticationEntryPoint extends BasicAuthenticationEntryPoi
 
     @Override
     public void afterPropertiesSet() {
-        setRealmName("CCD");
+        setRealmName("Adobe");
         super.afterPropertiesSet();
     }
 }

@@ -1,4 +1,4 @@
-package ca.bc.gov.open.ccd.test;
+package ca.bc.gov.open.adobe.test;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

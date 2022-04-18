@@ -1,4 +1,4 @@
-package ca.bc.gov.open.ccd.test.services;
+package ca.bc.gov.open.adobe.test.services;
 
 import com.eviware.soapui.tools.SoapUITestCaseRunner;
 import java.io.*;

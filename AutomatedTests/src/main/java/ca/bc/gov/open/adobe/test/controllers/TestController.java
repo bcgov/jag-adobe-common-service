@@ -1,6 +1,6 @@
-package ca.bc.gov.open.ccd.test.controllers;
+package ca.bc.gov.open.adobe.test.controllers;
 
-import ca.bc.gov.open.ccd.test.services.TestService;
+import ca.bc.gov.open.adobe.test.services.TestService;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
