@@ -48,6 +48,7 @@ public class PDFTransformSCPController {
             throws IOException {
         this.mapper = mapper;
         ssh = new SSHClient();
+        System.out.println(System.getProperty("user.home") + "/.ssh/known_hosts");
         File sshDir = new File(System.getProperty("user.home") + "/.ssh/known_hosts");
         System.out.println(sshDir.getParentFile().mkdirs() + "ssh was created");
         System.out.println(sshDir.createNewFile() + "know hosts was created");

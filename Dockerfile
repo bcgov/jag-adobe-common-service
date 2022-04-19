@@ -1,8 +1,8 @@
 FROM openjdk:11-jre-slim
 
 COPY ./adobe-common-application/target/jag-adobe-application.jar jag-adobe-application.jar
-RUN mkdir ~/.ssh
-RUN touch ~/.ssh/known_hosts
+ADD init.sh .
+RUN chmod +x init.sh
 RUN chgrp -R 0 ~/.ssh && \
     chmod -R g=u ~/.ssh
-ENTRYPOINT ["java","-jar","/jag-adobe-application.jar"]
+ENTRYPOINT ["./init.sh"]
