@@ -48,6 +48,9 @@ public class PDFTransformSCPController {
             throws IOException {
         this.mapper = mapper;
         ssh = new SSHClient();
+        File sshDir = new File(System.getProperty("user.home") + ".ssh/known_hosts");
+        sshDir.getParentFile().mkdirs();
+        sshDir.createNewFile();
         ssh.loadKnownHosts();
         this.objectMapper = objectMapper;
         this.webServiceTemplate = webServiceTemplate;
