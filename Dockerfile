@@ -1,4 +1,4 @@
-FROM registry.access.redhat.com/ubi8/openjdk-11
+FROM openjdk:11-jre-slim
 
 COPY ./adobe-common-application/target/jag-adobe-application.jar jag-adobe-application.jar
 
