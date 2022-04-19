@@ -1,2 +1,3 @@
 *
 !./adobe-common-application/target/jag-adobe-application.jar
+!./init.sh
