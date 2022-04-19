@@ -49,8 +49,8 @@ public class PDFTransformSCPController {
         this.mapper = mapper;
         ssh = new SSHClient();
         File sshDir = new File(System.getProperty("user.home") + "/.ssh/known_hosts");
-        sshDir.getParentFile().mkdirs();
-        sshDir.createNewFile();
+        System.out.println(sshDir.getParentFile().mkdirs() + "ssh was created");
+        System.out.println(sshDir.createNewFile() + "know hosts was created");
         ssh.loadKnownHosts();
         this.objectMapper = objectMapper;
         this.webServiceTemplate = webServiceTemplate;
