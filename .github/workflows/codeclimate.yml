@@ -74,6 +74,11 @@ jobs:
 
       - name: Check Code Style
         run: mvn -ntp spotless:check
+
+      - name: Setup ssh infra
+        run: |
+          mkdir ~/.ssh
+          touch ~/.ssh/known_hosts
           
       - name: Run Maven Test
         run: mvn -ntp verify
