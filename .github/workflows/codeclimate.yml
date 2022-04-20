@@ -18,7 +18,7 @@ jobs:
     
     env:
       FILE_COUNTER: 0
-      CC_TEST_REPORTER_ID: <REPLACE ME>
+      CC_TEST_REPORTER_ID: 41b349b46313457d36a7fd834fa3e603e0704cb3e240db40bd26ee4e802807cf
       BASIC_AUTH_USER: ${{ secrets.BASIC_AUTH_USER }}
       BASIC_AUTH_PASS: ${{ secrets.BASIC_AUTH_PASS }}
       ACTION_DEBUG: true
