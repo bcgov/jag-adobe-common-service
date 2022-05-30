@@ -31,6 +31,7 @@
         <module>adobe-common-application</module>
         <module>adobe-code-coverage</module>
         <module>lifecycle-gateway-models</module>
+        <module>AutomatedTests</module>
     </modules>
 
     <build>

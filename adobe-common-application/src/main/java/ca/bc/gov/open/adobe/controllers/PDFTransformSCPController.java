@@ -102,7 +102,7 @@ public class PDFTransformSCPController {
         }
     }
 
-    @PayloadRoot(namespace = SOAP_NAMESPACE, localPart = "PDFTransformations")
+    @PayloadRoot(namespace = SOAP_NAMESPACE, localPart = "PDFTransformationsByReference")
     @ResponsePayload
     public PDFTransformationsResponse pdfTransformSCPByReference(
             @RequestPayload PDFTransformations request) throws JsonProcessingException {

@@ -4,9 +4,11 @@ name: CodeClimate Workflow
 # Triggers that controls when the workflow will run
 on:
   push:
-    branches: [release/*,main]
+    branches: [ main ]
   pull_request:
-    branches: [release/*,main]
+    branches: [ main ]
+  workflow_dispatch:
+    branches: [main]
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -18,7 +20,7 @@ jobs:
     
     env:
       FILE_COUNTER: 0
-      CC_TEST_REPORTER_ID: <REPLACE ME>
+      CC_TEST_REPORTER_ID: 41b349b46313457d36a7fd834fa3e603e0704cb3e240db40bd26ee4e802807cf
       BASIC_AUTH_USER: ${{ secrets.BASIC_AUTH_USER }}
       BASIC_AUTH_PASS: ${{ secrets.BASIC_AUTH_PASS }}
       ACTION_DEBUG: true
@@ -74,21 +76,30 @@ jobs:
 
       - name: Check Code Style
         run: mvn -ntp spotless:check
+
+      - name: Setup ssh infra
+        run: |
+          mkdir ~/.ssh
+          touch ~/.ssh/known_hosts
           
-      - name: Run Maven Test
+      - name: Generate Code Coverage
         run: mvn -ntp verify
+
+      - name: Fix Jacoco Report Format for CC
+        run: sed -e 's/<[\/]\?group[^>]*>//g' adobe-code-coverage/target/site/jacoco-aggregate/jacoco.xml > adobe-code-coverage/target/site/jacoco-aggregate/jacoco-codeclimatecompat.xml
 
         # Formatting the Code Coverage Report
       - name: Format the coverage report
-        run: JACOCO_SOURCE_PATH="src/main/java target/generated-sources/xjc"  ./cc-test-reporter format-coverage ./target/site/jacoco/jacoco.xml -t jacoco -o ./target/site/jacoco/codeclimate.json
-        
-        # Upload JSON for debugging purposes
+        run: JACOCO_SOURCE_PATH="adobe-common-application/src/main/java adobe-common-ws-models/target/generated-sources/xjc" ./cc-test-reporter format-coverage adobe-code-coverage/target/site/jacoco-aggregate/jacoco-codeclimatecompat.xml --input-type jacoco -o ./target/site/jacoco/codeclimate.json
+
+
+      # Upload JSON for debugging purposes
       - name: Upload JSON for debugging purposes
         uses: actions/upload-artifact@v2
         with:
-          name: adobe-common-service-coverage-report
+          name: adobe-common-coverage-report
           path: ./target/site/jacoco/codeclimate.json
-      
+
       # Upload total coverage report to Code Climate
       - name: Upload coverage report to Code Climate
         run: ./cc-test-reporter upload-coverage -i ./target/site/jacoco/codeclimate.json

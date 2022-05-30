@@ -2,7 +2,7 @@ apiVersion: template.openshift.io/v1
 kind: Template
 metadata:
   name: ${COMPONENT_NAME}
-  description: Deployment template for the JAG-adobe-common-service-TESTS
+  description: Deployment template for the JAG-adobe-common-service-Tests
   
 labels:
   app: ${APP_NAME}
@@ -42,10 +42,15 @@ parameters:
   required: false
   # Below value must be changed as per gold & dr cluster certificate/DNS
   value: apps.silver.devops.gov.bc.ca
+
+- name: AUTH_HEADER
+  description: Basic http auth header
+  required: false
+  value: auth
   
 objects:
 
-### JAG-adobe-common-service-TESTS Deployment Config ###
+### JAG-adobe-common-service-Tests Deployment Config ###
 - apiVersion: apps.openshift.io/v1
   kind: DeploymentConfig
   metadata:
@@ -106,6 +111,9 @@ objects:
                 path: "/actuator/health"
                 port: 8080
                 scheme: HTTP
+                httpHeaders:
+                - name: Authorization
+                  value: ${AUTH_HEADER}
               initialDelaySeconds: 100
               timeoutSeconds: 30
               periodSeconds: 10
@@ -116,6 +124,9 @@ objects:
                 path: "/actuator/health"
                 port: 8080
                 scheme: HTTP
+                httpHeaders:
+                - name: Authorization
+                  value: ${AUTH_HEADER}
               initialDelaySeconds: 100
               timeoutSeconds: 30
               periodSeconds: 10
@@ -133,7 +144,7 @@ objects:
             namespace: ${OC_NAMESPACE}-tools
             name: ${COMPONENT_NAME}:${OC_ENV}
 
-### JAG-adobe-common-service-TESTS Service ###
+### JAG-adobe-common-service-Tests Service ###
 - apiVersion: v1
   kind: Service
   metadata:
@@ -150,7 +161,7 @@ objects:
     sessionAffinity: None
     type: ClusterIP
 
-### JAG-adobe-common-service-TESTS Route ###
+### JAG-adobe-common-service-Tests Route ###
 - apiVersion: route.openshift.io/v1
   kind: Route
   metadata:
