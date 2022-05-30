@@ -21,8 +21,6 @@ public class TestService {
     @Value("${test.api-host}")
     private String apiHostCommon;
 
-
-
     public TestService() {}
 
     public void setAuthentication(String filename) throws IOException {
