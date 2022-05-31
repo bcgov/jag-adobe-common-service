@@ -43,7 +43,7 @@ before they can be pushed to.
 
 ### Running the application
 Option A) Intellij
-1) Create intellij run configuration from Staffnet-Identity-Provisioning and/or Staffnet-Biometrics Application
+1) Create intellij run configuration from jag-adobe-common-service Application
 2) Set env variables. See the .env-template
 3) Run the application
 
@@ -51,7 +51,7 @@ Option B) Jar
 1) Run ```mvn package```
 2) Run ```java -jar ./target/jag-adobe-application.jar```
 
-Option C) Docker (* being biometrics/identity-provisioning)
+Option C) Docker
 1) Run ```mvn package```
 2) Run ```docker build -t acs .``` from root folder to build image
 3) Run ```docker docker run -e $ENV_VAR$ acs``` (Note that environment variables need to be set)
