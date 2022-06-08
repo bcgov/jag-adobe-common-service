@@ -26,6 +26,8 @@ BASIC_AUTH_USER: The username for the basic authentication. This can be any valu
 
 LIFECYCLE_HOST: The url for lifecycle web services.
 
+NFS_FILE_DIR: The directory for NFS Mount file transfer.
+
 SPLUNK_HTTP_URL: The url for the spluck hec. For local splunk this value should be 127.0.0.1:8088 for
 remote do not include /services/collector.
 
@@ -68,6 +70,8 @@ BASIC_AUTH_PASS
 BASIC_AUTH_USER
 
 LIFECYCLE_HOST
+
+NFS_FILE_DIR
 
 SPLUNK_HTTP_URL
 

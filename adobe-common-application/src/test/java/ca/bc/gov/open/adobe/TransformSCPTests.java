@@ -46,8 +46,6 @@ public class TransformSCPTests {
                         Mockito.anyString(), Mockito.any(PDFTransformations.class)))
                 .thenReturn(a);
 
-        doReturn(true).when(controller);
-
         var resp = controller.transformPDFScp(req);
 
         Assertions.assertNotNull(resp);
