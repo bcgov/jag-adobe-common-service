@@ -24,7 +24,7 @@ BASIC_AUTH_PASS: The password for the basic authentication. This can be any valu
 
 BASIC_AUTH_USER: The username for the basic authentication. This can be any value for local.
 
-LIFECYCLE_HOST: The url for lifecycle web services. 
+LIFECYCLE_HOST: The url for lifecycle web services.
 
 SPLUNK_HTTP_URL: The url for the spluck hec. For local splunk this value should be 127.0.0.1:8088 for
 remote do not include /services/collector.
@@ -38,7 +38,7 @@ before they can be pushed to.
 1) Set intellij to use java 11 for the project modals and sdk
 2) Run ``mvn compile``
 3) Make sure ```target/generated-sources/xjc``` folder in included in module path for
-   ```adobe-common-ws-models ```, and ```lifecycle-gateway-models ```
+```adobe-common-ws-models ```, and ```lifecycle-gateway-models ```
 
 
 ### Running the application
@@ -55,7 +55,7 @@ Option C) Docker
 1) Run ```mvn package```
 2) Run ```docker build -t acs .``` from root folder to build image
 3) Run ```docker docker run -e $ENV_VAR$ acs``` (Note that environment variables need to be set)
-* Dockerfile is to create container from Openshift, Dockerfile.local is to create container locally. This is because Openshift terminal root can't be found via '~'. 
+* Dockerfile is to create container from Openshift, Dockerfile.local is to create container locally. This is because Openshift terminal root can't be found via '~'.
 * To create docker container that runs application, 'known_hosts' is needed, and accessibility of read and write is needed.
 
 Option D) Eclipse

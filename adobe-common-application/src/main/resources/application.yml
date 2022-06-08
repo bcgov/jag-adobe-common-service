@@ -4,6 +4,7 @@ security:
     username: ${BASIC_AUTH_USER}
 adobe:
   lifecycle-host: ${LIFECYCLE_HOST}
+  nfs-file-dir: ${NFS_FILE_DIR}
 management:
   endpoints:
     web:
