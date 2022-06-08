@@ -129,24 +129,4 @@ public class PDFTransformSCPController {
             return out;
         }
     }
-
-    //    public boolean scpTransfer(String host, String dest, File payload) throws IOException {
-    //
-    //        ssh.connect(host);
-    //        try {
-    //
-    //            // Not sure allowed but would be best
-    //            ssh.useCompression();
-    //
-    //            ssh.newSCPFileTransfer()
-    //                    .upload(new FileSystemFile(payload.getAbsoluteFile().getPath()), dest);
-    //            return true;
-    //        } catch (Exception ex) {
-    //            log.error("Failed to scp file to remote");
-    //        } finally {
-    //            ssh.disconnect();
-    //        }
-    //
-    //        return false;
-    //    }
 }
