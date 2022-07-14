@@ -22,9 +22,10 @@ public class TestController {
     public TestController(TestService testService) throws IOException {
 
         this.testService = testService;
-        this.testService.setAuthentication("AdobeCommonServicePDFDiagnosticsWS-soapui-project-template.xml");
-        this.testService.setAuthentication("AdobeCSpdfTransformationWS-soapui-project-template.xml");
-
+        this.testService.setAuthentication(
+                "AdobeCommonServicePDFDiagnosticsWS-soapui-project-template.xml");
+        this.testService.setAuthentication(
+                "AdobeCSpdfTransformationWS-soapui-project-template.xml");
     }
 
     @GetMapping(value = "/all")
