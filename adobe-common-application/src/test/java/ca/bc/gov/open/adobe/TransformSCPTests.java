@@ -6,7 +6,6 @@ import ca.bc.gov.open.adobe.controllers.PDFTransformSCPController;
 import ca.bc.gov.open.adobe.exceptions.AdobeLCGException;
 import ca.bc.gov.open.adobe.scp.PDFTransformations;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import org.junit.jupiter.api.Assertions;
@@ -46,10 +45,6 @@ public class TransformSCPTests {
         when(webServiceTemplate.marshalSendAndReceive(
                         Mockito.anyString(), Mockito.any(PDFTransformations.class)))
                 .thenReturn(a);
-
-        doReturn(true)
-                .when(controller)
-                .scpTransfer(Mockito.anyString(), Mockito.anyString(), Mockito.any(File.class));
 
         var resp = controller.transformPDFScp(req);
 

@@ -8,3 +8,5 @@ test:
   username: ${BASIC_AUTH_USER}
   api-host: ${API_HOST}
 
+server:
+  port: 8082
