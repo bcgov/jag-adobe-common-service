@@ -81,7 +81,7 @@ public class DiagnosticControllerTests {
 
         Assertions.assertNotNull(resp);
         Assertions.assertNotEquals(response, resp);
-        Assertions.assertEquals(resp.getPDFDiagnosticsReturn(), 0);
+        Assertions.assertEquals(resp.getPDFDiagnosticsReturn(), null);
     }
 
     @Test
@@ -100,6 +100,6 @@ public class DiagnosticControllerTests {
 
         Assertions.assertNotNull(resp);
         Assertions.assertNotEquals(response, resp);
-        Assertions.assertEquals(resp.getPDFDiagnosticsByReferenceReturn(), 0);
+        Assertions.assertEquals(resp.getPDFDiagnosticsByReferenceReturn(), null);
     }
 }

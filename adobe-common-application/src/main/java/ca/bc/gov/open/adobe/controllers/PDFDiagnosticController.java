@@ -47,15 +47,10 @@ public class PDFDiagnosticController {
         try {
             resp = (PDFDiagnosticsResponse) webServiceTemplate.marshalSendAndReceive(host, request);
 
-            if (resp.getPDFDiagnosticsReturn() != 0) {
-                throw new RuntimeException();
-            }
-
             log.info(
                     objectMapper.writeValueAsString(
                             new RequestSuccessLog("Request Success", "PDFDiagnostics")));
 
-            resp.setPDFDiagnosticsReturn(1);
             return resp;
         } catch (Exception ex) {
             log.error(
@@ -64,9 +59,8 @@ public class PDFDiagnosticController {
                                     "Failed to get pdf diagnostic",
                                     "PDFDiagnostics",
                                     ex.getMessage(),
-                                    null)));
+                                    request)));
 
-            resp.setPDFDiagnosticsReturn(0);
             return resp;
         }
     }
@@ -81,10 +75,6 @@ public class PDFDiagnosticController {
                     (PDFDiagnosticsByReferenceResponse)
                             webServiceTemplate.marshalSendAndReceive(host, request);
 
-            if (resp.getPDFDiagnosticsByReferenceReturn() != 0) {
-                throw new RuntimeException();
-            }
-
             log.info(
                     objectMapper.writeValueAsString(
                             new RequestSuccessLog("Request Success", "PDFDiagnosticsByReference")));
@@ -97,9 +87,8 @@ public class PDFDiagnosticController {
                                     "Failed to get pdf diagnostic",
                                     "PDFDiagnosticsByReference",
                                     ex.getMessage(),
-                                    null)));
+                                    request)));
 
-            resp.setPDFDiagnosticsByReferenceReturn(0);
             return resp;
         }
     }
