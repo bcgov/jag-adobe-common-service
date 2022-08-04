@@ -60,6 +60,11 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 11
+
+      - name: Setup ssh infra
+        run: |
+          mkdir ~/.ssh
+          touch ~/.ssh/known_hosts
         
       # Runs build steps
       - name: Maven Package
