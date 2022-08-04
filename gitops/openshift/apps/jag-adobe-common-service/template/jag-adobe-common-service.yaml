@@ -120,11 +120,6 @@ objects:
                 secretKeyRef:
                   name: adobe-common-service-application-secrets
                   key: LIFECYCLE_HOST
-            - name: NFS_FILE_DIR
-              valueFrom:
-                secretKeyRef:
-                  name: adobe-common-service-application-secrets
-                  key: NFS_FILE_DIR
             resources:
               limits:
                 cpu: 500m

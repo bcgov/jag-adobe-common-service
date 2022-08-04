@@ -10,6 +10,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
+import net.schmizz.sshj.SSHClient;
+import net.schmizz.sshj.xfer.FileSystemFile;
 import org.apache.commons.io.FileUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,15 +30,14 @@ public class PDFTransformSCPController {
     @Value("${adobe.lifecycle-host}")
     private String host = "https://127.0.0.1/";
 
-    @Value("${adobe.nfs-file-dir}")
-    private String fileDir = "nfs";
-
     private static final String SOAP_NAMESPACE =
             "http://brooks/AdobeCommonServices.Source.CommonServices.ws.provider:PDFTransformationsSCPWS";
 
     private final ObjectMapper objectMapper;
 
     private final WebServiceTemplate webServiceTemplate;
+    private final String tempFileDir = "temp-pdfs/";
+    private final SSHClient ssh;
 
     private final ModelMapper mapper;
 
@@ -47,6 +48,8 @@ public class PDFTransformSCPController {
             ModelMapper mapper)
             throws IOException {
         this.mapper = mapper;
+        ssh = new SSHClient();
+        ssh.loadKnownHosts();
         this.objectMapper = objectMapper;
         this.webServiceTemplate = webServiceTemplate;
     }
@@ -66,9 +69,11 @@ public class PDFTransformSCPController {
                                             request,
                                             ca.bc.gov.open.adobe.gateway.PDFTransformations.class));
 
-            // Create file to nfs dir
-            f = new File(fileDir + "/TmpPDF" + UUID.randomUUID() + ".pdf");
+            f = new File(tempFileDir + "TmpPDF" + UUID.randomUUID() + ".pdf");
             FileUtils.writeByteArrayToFile(f, gatewayResp.getPDFTransformationsReturn());
+
+            // SCP the file to a server
+            scpTransfer(request.getRemotehost(), request.getRemotefile(), f);
 
             // Return the good response
             log.info(
@@ -128,5 +133,22 @@ public class PDFTransformSCPController {
             out.setStatusMsg(ex.getMessage());
             return out;
         }
+    }
+
+    public boolean scpTransfer(String host, String dest, File payload) throws IOException {
+        ssh.connect(host);
+        try {
+            // Not sure allowed but would be best
+            ssh.useCompression();
+
+            ssh.newSCPFileTransfer()
+                    .upload(new FileSystemFile(payload.getAbsoluteFile().getPath()), dest);
+            return true;
+        } catch (Exception ex) {
+            log.error("Failed to scp file to remote");
+        } finally {
+            ssh.disconnect();
+        }
+        return false;
     }
 }
