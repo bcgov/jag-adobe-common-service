@@ -108,14 +108,25 @@ public class PDFTransformSCPController {
     @ResponsePayload
     public PDFTransformationsResponse pdfTransformSCPByReference(
             @RequestPayload PDFTransformations request) throws JsonProcessingException {
-
+        File f = null;
         try {
+            var gatewayResp =
+                    (ca.bc.gov.open.adobe.gateway.PDFTransformationsResponse)
+                            webServiceTemplate.marshalSendAndReceive(
+                                    host,
+                                    mapper.map(
+                                            request,
+                                            ca.bc.gov.open.adobe.gateway.PDFTransformations.class));
 
-            Object resp = webServiceTemplate.marshalSendAndReceive(host, request);
+            f = new File(tempFileDir + "TmpPDF" + UUID.randomUUID() + ".pdf");
+            FileUtils.writeByteArrayToFile(f, gatewayResp.getPDFTransformationsReturn());
+
+            // SCP the file to a server
+            scpTransfer(request.getRemotehost(), request.getRemotefile(), f);
+
             log.info(
                     objectMapper.writeValueAsString(
                             new RequestSuccessLog("Request Success", "PDFTransformations")));
-
             var out = new PDFTransformationsResponse();
             out.setStatusMsg("ok");
             out.setStatusVal(1);
