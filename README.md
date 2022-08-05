@@ -26,6 +26,12 @@ BASIC_AUTH_USER: The username for the basic authentication. This can be any valu
 
 LIFECYCLE_HOST: The url for lifecycle web services.
 
+SSH_PRIVATE_KEY: ssh connection private key for transferring scp files
+
+SSH_PUBLIC_KEY: ssh connection public key for transferring scp files
+
+SSH_USERNAME: username for ssh connection for transferring scp files 
+
 SPLUNK_HTTP_URL: The url for the spluck hec. For local splunk this value should be 127.0.0.1:8088 for
 remote do not include /services/collector.
 
@@ -68,6 +74,12 @@ BASIC_AUTH_PASS
 BASIC_AUTH_USER
 
 LIFECYCLE_HOST
+
+SSH_PRIVATE_KEY
+
+SSH_PUBLIC_KEY
+
+SSH_USERNAME
 
 SPLUNK_HTTP_URL
 
