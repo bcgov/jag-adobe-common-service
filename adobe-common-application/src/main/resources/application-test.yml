@@ -8,3 +8,4 @@ adobe:
   ssh:
     private-key: ${BASIC_AUTH_PASS}
     public-key: ${BASIC_AUTH_PASS}
+    username: ${BASIC_AUTH_USER}
