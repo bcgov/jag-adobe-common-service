@@ -2,8 +2,12 @@ security:
   basic-auth:
     password: ${BASIC_AUTH_PASS}
     username: ${BASIC_AUTH_USER}
+
 adobe:
   lifecycle-host: ${LIFECYCLE_HOST}
+  ssh:
+    private-key: ${SSH_PRIVATE_KEY}
+    public-key: ${SSH_PUBLIC_KEY}
 management:
   endpoints:
     web:

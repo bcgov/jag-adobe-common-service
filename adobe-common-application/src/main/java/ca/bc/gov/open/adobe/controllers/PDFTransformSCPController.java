@@ -27,6 +27,12 @@ import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 @Slf4j
 public class PDFTransformSCPController {
 
+    @Value("${adobe.ssh.private-key}")
+    private String prvtKey = "";
+
+    @Value("${adobe.ssh.public-key}")
+    private String pubKey = "";
+
     @Value("${adobe.lifecycle-host}")
     private String host = "https://127.0.0.1/";
 
@@ -48,10 +54,10 @@ public class PDFTransformSCPController {
             ModelMapper mapper)
             throws IOException {
         this.mapper = mapper;
-        ssh = new SSHClient();
-        ssh.loadKnownHosts();
         this.objectMapper = objectMapper;
         this.webServiceTemplate = webServiceTemplate;
+        ssh = new SSHClient();
+        ssh.loadKnownHosts();
     }
 
     @PayloadRoot(namespace = SOAP_NAMESPACE, localPart = "PDFTransformations")
@@ -147,6 +153,7 @@ public class PDFTransformSCPController {
     }
 
     public boolean scpTransfer(String host, String dest, File payload) throws IOException {
+        ssh.loadKeys(prvtKey, pubKey, null);
         ssh.connect(host);
         try {
             // Not sure allowed but would be best
