@@ -120,6 +120,21 @@ objects:
                 secretKeyRef:
                   name: adobe-common-service-application-secrets
                   key: LIFECYCLE_HOST
+            - name: SSH_PRIVATE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: jag-adobe-common-service-ssh
+                  key: SSH_PRIVATE_KEY
+            - name: SSH_PUBLIC_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: jag-adobe-common-service-ssh
+                  key: SSH_PUBLIC_KEY
+            - name: SSH_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: jag-adobe-common-service-ssh
+                  key: SSH_USERNAME
             resources:
               limits:
                 cpu: 500m

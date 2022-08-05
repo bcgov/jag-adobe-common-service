@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import net.schmizz.sshj.SSHClient;
+import net.schmizz.sshj.userauth.keyprovider.KeyProvider;
 import net.schmizz.sshj.xfer.FileSystemFile;
 import org.apache.commons.io.FileUtils;
 import org.modelmapper.ModelMapper;
@@ -26,6 +27,15 @@ import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 @Endpoint
 @Slf4j
 public class PDFTransformSCPController {
+
+    @Value("${adobe.ssh.private-key}")
+    private String prvtKey = "";
+
+    @Value("${adobe.ssh.public-key}")
+    private String pubKey = "";
+
+    @Value("${adobe.ssh.username}")
+    private String sshUserName = "";
 
     @Value("${adobe.lifecycle-host}")
     private String host = "https://127.0.0.1/";
@@ -48,10 +58,10 @@ public class PDFTransformSCPController {
             ModelMapper mapper)
             throws IOException {
         this.mapper = mapper;
-        ssh = new SSHClient();
-        ssh.loadKnownHosts();
         this.objectMapper = objectMapper;
         this.webServiceTemplate = webServiceTemplate;
+        ssh = new SSHClient();
+        ssh.loadKnownHosts();
     }
 
     @PayloadRoot(namespace = SOAP_NAMESPACE, localPart = "PDFTransformations")
@@ -147,6 +157,8 @@ public class PDFTransformSCPController {
     }
 
     public boolean scpTransfer(String host, String dest, File payload) throws IOException {
+        KeyProvider keyProvider = ssh.loadKeys(prvtKey, pubKey, null);
+        ssh.authPublickey(sshUserName, keyProvider);
         ssh.connect(host);
         try {
             // Not sure allowed but would be best
@@ -154,6 +166,7 @@ public class PDFTransformSCPController {
 
             ssh.newSCPFileTransfer()
                     .upload(new FileSystemFile(payload.getAbsoluteFile().getPath()), dest);
+
             return true;
         } catch (Exception ex) {
             log.error("Failed to scp file to remote");
