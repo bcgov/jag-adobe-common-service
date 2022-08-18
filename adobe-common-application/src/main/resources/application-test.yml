@@ -9,3 +9,5 @@ adobe:
     private-key: ${BASIC_AUTH_PASS}
     public-key: ${BASIC_AUTH_PASS}
     username: ${BASIC_AUTH_USER}
+    host: http://127.0.0.1/
+    nfs-dir: /

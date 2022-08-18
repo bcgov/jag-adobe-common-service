@@ -8,7 +8,9 @@ adobe:
   ssh:
     private-key: ${SSH_PRIVATE_KEY}
     public-key: ${SSH_PUBLIC_KEY}
-    username: ${SSH_USERNAME}
+    username: ${SFEG_USERNAME}
+    host: ${SFEG_HOST}
+    nfs-dir: ${NFS_DIR}
 management:
   endpoints:
     web:

@@ -35,7 +35,13 @@ public class PDFTransformSCPController {
     private String pubKey = "";
 
     @Value("${adobe.ssh.username}")
-    private String sshUserName = "";
+    private String sfegUserName = "";
+
+    @Value("${adobe.ssh.host}")
+    private String sfegHost = "";
+
+    @Value("${adobe.ssh.nfs-dir}")
+    private String nfsDir = "";
 
     @Value("${adobe.lifecycle-host}")
     private String host = "https://127.0.0.1/";
@@ -158,14 +164,15 @@ public class PDFTransformSCPController {
 
     public boolean scpTransfer(String host, String dest, File payload) throws IOException {
         KeyProvider keyProvider = ssh.loadKeys(prvtKey, pubKey, null);
-        ssh.authPublickey(sshUserName, keyProvider);
+        ssh.authPublickey(sfegUserName, keyProvider);
         ssh.connect(host);
         try {
             // Not sure allowed but would be best
             ssh.useCompression();
-
             ssh.newSCPFileTransfer()
-                    .upload(new FileSystemFile(payload.getAbsoluteFile().getPath()), dest);
+                    .upload(
+                            new FileSystemFile(payload.getAbsoluteFile().getPath()),
+                            sfegUserName + "@" + sfegHost + ":" + dest);
 
             return true;
         } catch (Exception ex) {

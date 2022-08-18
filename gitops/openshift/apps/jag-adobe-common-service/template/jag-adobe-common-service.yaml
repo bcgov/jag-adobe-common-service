@@ -120,21 +120,31 @@ objects:
                 secretKeyRef:
                   name: adobe-common-service-application-secrets
                   key: LIFECYCLE_HOST
+            - name: SFEG_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: adobe-common-service-application-secrets
+                  key: SFEG_USERNAME
+            - name: SFEG_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: adobe-common-service-application-secrets
+                  key: SFEG_HOST
+            - name: NFS_DIR
+              valueFrom:
+                secretKeyRef:
+                  name: adobe-common-service-application-secrets
+                  key: NFS_DIR
             - name: SSH_PRIVATE_KEY
               valueFrom:
                 secretKeyRef:
                   name: jag-adobe-common-service-ssh
-                  key: SSH_PRIVATE_KEY
+                  key: id_rsa
             - name: SSH_PUBLIC_KEY
               valueFrom:
                 secretKeyRef:
                   name: jag-adobe-common-service-ssh
-                  key: SSH_PUBLIC_KEY
-            - name: SSH_USERNAME
-              valueFrom:
-                secretKeyRef:
-                  name: jag-adobe-common-service-ssh
-                  key: SSH_USERNAME
+                  key: id_rsa.pub
             resources:
               limits:
                 cpu: 500m
