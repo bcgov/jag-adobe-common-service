@@ -176,7 +176,8 @@ public class PDFTransformSCPController {
 
             return true;
         } catch (Exception ex) {
-            log.error("Failed to scp file to remote");
+            log.error(
+                    "Failed to scp file to remote: " + sfegUserName + "@" + sfegHost + ":" + dest);
         } finally {
             ssh.disconnect();
         }
