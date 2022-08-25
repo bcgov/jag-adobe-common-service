@@ -9,9 +9,10 @@ adobe:
     private-key: ${SSH_PRIVATE_KEY}
     public-key: ${SSH_PUBLIC_KEY}
     username: ${SFEG_USERNAME}
+    host: ${SFEG_HOST}
+    nfs-dir: ${NFS_DIR}
 management:
   endpoints:
     web:
       exposure:
         include: metrics,prometheus,health
-
