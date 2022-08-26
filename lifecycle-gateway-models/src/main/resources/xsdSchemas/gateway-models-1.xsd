@@ -14,7 +14,7 @@
     <xsd:element name="PDFTransformations">
         <xsd:complexType>
             <xsd:sequence>
-                <xsd:element name="inputFile" nillable="true" type="xsd:string"/>
+                <xsd:element name="inputFileUrl" nillable="true" type="xsd:string"/>
                 <xsd:element name="flags" nillable="true" type="xsd:int"/>
             </xsd:sequence>
         </xsd:complexType>
