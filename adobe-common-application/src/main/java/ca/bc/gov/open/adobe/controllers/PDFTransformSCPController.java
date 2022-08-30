@@ -9,7 +9,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
 import java.io.IOException;
 import java.util.UUID;
-import javax.xml.soap.SOAPMessage;
 import lombok.extern.slf4j.Slf4j;
 import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.userauth.keyprovider.KeyProvider;
@@ -23,7 +22,6 @@ import org.springframework.ws.client.core.WebServiceTemplate;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
-import org.springframework.ws.soap.saaj.SaajSoapMessage;
 import org.springframework.ws.soap.server.endpoint.annotation.SoapAction;
 
 @Endpoint
@@ -92,45 +90,7 @@ public class PDFTransformSCPController {
                                     host,
                                     mapper.map(
                                             request,
-                                            ca.bc.gov.open.adobe.gateway.PDFTransformations.class),
-                                    message -> {
-                                        try {
-                                            SaajSoapMessage saajSoapMessage =
-                                                    (SaajSoapMessage) message;
-                                            SOAPMessage soapMessage =
-                                                    saajSoapMessage.getSaajMessage();
-                                            soapMessage
-                                                    .getSOAPPart()
-                                                    .getEnvelope()
-                                                    .removeNamespaceDeclaration("SOAP-ENV");
-                                            soapMessage
-                                                    .getSOAPPart()
-                                                    .getEnvelope()
-                                                    .addNamespaceDeclaration(
-                                                            "soap",
-                                                            "http://schemas.xmlsoap.org/soap/envelope/");
-                                            soapMessage
-                                                    .getSOAPPart()
-                                                    .getEnvelope()
-                                                    .addNamespaceDeclaration(
-                                                            "ag", "http://ag.gov.bc.ca");
-                                            soapMessage
-                                                    .getSOAPPart()
-                                                    .getEnvelope()
-                                                    .setPrefix("soap");
-
-                                            //
-                                            // saajSoapMessage.setSoapAction(SoapClientConfig.ACTION_BASE_URL + actionName);
-                                            //
-                                            //
-                                            // certificationService.signDocument(doc, actionName,
-                                            // "Request", company);
-                                            soapMessage.saveChanges();
-
-                                        } catch (Exception e) {
-                                            e.printStackTrace();
-                                        }
-                                    });
+                                            ca.bc.gov.open.adobe.gateway.PDFTransformations.class));
 
             f = new File(tempFileDir + "TmpPDF" + UUID.randomUUID() + ".pdf");
             FileUtils.writeByteArrayToFile(f, gatewayResp.getPDFTransformationsReturn());
@@ -180,64 +140,16 @@ public class PDFTransformSCPController {
             @RequestPayload PDFTransformations request) throws JsonProcessingException {
         File f = null;
         try {
-            //            var newReq = new
-            // ca.bc.gov.open.adobe.gateway.PDFTransformationsByReference();
-            //            newReq.setInputFileUrl(request.getInputFileUrl());
-            //            newReq.setFlags(request.getFlags());
-
-            //            var gatewayResp =
-            //
-            // (ca.bc.gov.open.adobe.gateway.PDFTransformationsByReferenceResponse)
-            //                            webServiceTemplate.marshalSendAndReceive(
-            //                                    host,
-            //                                    newReq
-            //                                    ,
-            //                                    message -> {
-            //                                        try {
-            //                                            SaajSoapMessage saajSoapMessage =
-            // (SaajSoapMessage) message;
-            //                                            SOAPMessage soapMessage =
-            // saajSoapMessage.getSaajMessage();
-            //
-            // soapMessage.getSOAPPart().getEnvelope().removeNamespaceDeclaration(soapMessage.getSOAPPart().getEnvelope().getPrefix());
-            //
-            //
-            // soapMessage.getSOAPPart().getEnvelope().addNamespaceDeclaration("ag",
-            // "http://ag.gov.bc.ca");
-            //
-            // soapMessage.getSOAPPart().getEnvelope().addNamespaceDeclaration("xsi",
-            // "http://www.w3.org/2001/XMLSchema-instance");
-            //
-            // soapMessage.getSOAPPart().getEnvelope().addNamespaceDeclaration("xsd",
-            // "http://www.w3.org/2001/XMLSchema");
-            //
-            //
-            // soapMessage.getSOAPPart().getEnvelope().setPrefix("soapenv");
-            //
-            // soapMessage.getSOAPPart().getEnvelope().getBody().setPrefix("soapenv");
-            //
-            // soapMessage.getSOAPPart().getEnvelope().getHeader().setPrefix("soapenv");
-            //
-            //                                            message.writeTo(System.out);
-            ////                                            soapMessage.saveChanges();
-            //
-            //                                        } catch (Exception e) {
-            //                                            e.printStackTrace();
-            //                                        }
-            //                                    }
-            //        );
-
             var gatewayResp =
-                    (ca.bc.gov.open.adobe.gateway.PDFTransformationsByReferenceResponse)
+                    (ca.bc.gov.open.adobe.gateway.PDFTransformationsResponse)
                             webServiceTemplate.marshalSendAndReceive(
                                     host,
                                     mapper.map(
                                             request,
-                                            ca.bc.gov.open.adobe.gateway
-                                                    .PDFTransformationsByReference.class));
+                                            ca.bc.gov.open.adobe.gateway.PDFTransformations.class));
 
             f = new File(tempFileDir + "TmpPDF" + UUID.randomUUID() + ".pdf");
-            FileUtils.writeByteArrayToFile(f, gatewayResp.getPDFTransformationsByReferenceReturn());
+            FileUtils.writeByteArrayToFile(f, gatewayResp.getPDFTransformationsReturn());
 
             // SCP the file to a server
             scpTransfer(request.getRemotehost(), request.getRemotefile(), f);
