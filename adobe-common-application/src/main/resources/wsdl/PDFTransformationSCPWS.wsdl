@@ -32,6 +32,8 @@
             </xsd:complexType>
             <xsd:element name="PDFTransformations" type="tns:PDFTransformations"/>
             <xsd:element name="PDFTransformationsResponse" type="tns:PDFTransformationsResponse"/>
+            <xsd:element name="PDFTransformations2" type="tns:PDFTransformations2"/>
+            <xsd:element name="PDFTransformationsResponse2" type="tns:PDFTransformationsResponse2"/>
         </xsd:schema>
     </wsdl:types>
     <wsdl:message name="PDFTransformationsSCPWS_PortType_PDFTransformations">
@@ -42,11 +44,19 @@
         <wsdl:part name="parameters" element="tns:PDFTransformationsResponse">
         </wsdl:part>
     </wsdl:message>
+    <wsdl:message name="PDFTransformationsSCPWS_PortType_PDFTransformations2">
+        <wsdl:part name="parameters" element="tns:PDFTransformations2">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="PDFTransformationsSCPWS_PortType_PDFTransformations2Response">
+        <wsdl:part name="parameters" element="tns:PDFTransformationsResponse2">
+        </wsdl:part>
+    </wsdl:message>
     <wsdl:portType name="PDFTransformationsSCPWS_PortType">
         <wsdl:operation name="PDFTransformationsScp">
-            <wsdl:input message="tns:PDFTransformationsSCPWS_PortType_PDFTransformations">
+            <wsdl:input message="tns:PDFTransformationsSCPWS_PortType_PDFTransformations2">
             </wsdl:input>
-            <wsdl:output message="tns:PDFTransformationsSCPWS_PortType_PDFTransformationsResponse">
+            <wsdl:output message="tns:PDFTransformationsSCPWS_PortType_PDFTransformationsResponse2">
             </wsdl:output>
         </wsdl:operation>
         <wsdl:operation name="PDFTransformationsByReferenceScp">

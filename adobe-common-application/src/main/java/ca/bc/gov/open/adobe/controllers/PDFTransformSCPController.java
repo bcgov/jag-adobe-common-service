@@ -3,7 +3,9 @@ package ca.bc.gov.open.adobe.controllers;
 import ca.bc.gov.open.adobe.models.OrdsErrorLog;
 import ca.bc.gov.open.adobe.models.RequestSuccessLog;
 import ca.bc.gov.open.adobe.scp.PDFTransformations;
+import ca.bc.gov.open.adobe.scp.PDFTransformations2;
 import ca.bc.gov.open.adobe.scp.PDFTransformationsResponse;
+import ca.bc.gov.open.adobe.scp.PDFTransformationsResponse2;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
@@ -72,7 +74,7 @@ public class PDFTransformSCPController {
 
     @PayloadRoot(namespace = SOAP_NAMESPACE, localPart = "PDFTransformations")
     @ResponsePayload
-    public PDFTransformationsResponse transformPDFScp(@RequestPayload PDFTransformations request)
+    public PDFTransformationsResponse2 transformPDFScp(@RequestPayload PDFTransformations2 request)
             throws JsonProcessingException {
         File f = null;
         try {
@@ -95,7 +97,7 @@ public class PDFTransformSCPController {
             log.info(
                     objectMapper.writeValueAsString(
                             new RequestSuccessLog("Request Success", "PDFTransformations")));
-            var out = new PDFTransformationsResponse();
+            var out = new PDFTransformationsResponse2();
             out.setStatusVal(1);
             out.setStatusMsg("ok");
             return out;
@@ -103,11 +105,11 @@ public class PDFTransformSCPController {
             log.error(
                     objectMapper.writeValueAsString(
                             new OrdsErrorLog(
-                                    "Failed to scp message",
+                                    "Failed to send message to adobe LCG",
                                     "PDFTransformations",
                                     ex.getMessage(),
                                     null)));
-            var out = new PDFTransformationsResponse();
+            var out = new PDFTransformationsResponse2();
             out.setStatusVal(0);
             out.setStatusMsg(ex.getMessage());
             return out;

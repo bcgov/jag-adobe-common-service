@@ -5,6 +5,7 @@ import static org.mockito.Mockito.*;
 import ca.bc.gov.open.adobe.controllers.PDFTransformSCPController;
 import ca.bc.gov.open.adobe.exceptions.AdobeLCGException;
 import ca.bc.gov.open.adobe.scp.PDFTransformations;
+import ca.bc.gov.open.adobe.scp.PDFTransformations2;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -30,10 +31,10 @@ public class TransformSCPTests {
 
     @Test
     public void transformPDFScpSuccessTest() throws IOException {
-        var req = new PDFTransformations();
+        var req = new PDFTransformations2();
         req.setFlags(1);
         req.setRemotefile("A");
-        req.setInputFileUrl("A");
+        req.setInputFile("A");
         req.setRemotehost("A");
 
         controller =
@@ -43,7 +44,7 @@ public class TransformSCPTests {
         byte[] a = "AAAAAAAAAA".getBytes(StandardCharsets.UTF_8);
 
         when(webServiceTemplate.marshalSendAndReceive(
-                        Mockito.anyString(), Mockito.any(PDFTransformations.class)))
+                        Mockito.anyString(), Mockito.any(PDFTransformations2.class)))
                 .thenReturn(a);
 
         var resp = controller.transformPDFScp(req);
@@ -86,10 +87,10 @@ public class TransformSCPTests {
 
     @Test
     public void transformPDFScpFailTest() throws IOException {
-        var req = new PDFTransformations();
+        var req = new PDFTransformations2();
         req.setFlags(1);
         req.setRemotefile("A");
-        req.setInputFileUrl("A");
+        req.setInputFile("A");
         req.setRemotehost("A");
 
         controller =
@@ -97,7 +98,7 @@ public class TransformSCPTests {
         controller = spy(controller);
 
         when(webServiceTemplate.marshalSendAndReceive(
-                        Mockito.anyString(), Mockito.any(PDFTransformations.class)))
+                        Mockito.anyString(), Mockito.any(PDFTransformations2.class)))
                 .thenThrow(new AdobeLCGException());
 
         var resp = controller.transformPDFScp(req);
