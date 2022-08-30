@@ -20,9 +20,9 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.ws.client.core.WebServiceTemplate;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
+import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
-import org.springframework.ws.soap.server.endpoint.annotation.SoapAction;
 
 @Endpoint
 @Slf4j
@@ -70,16 +70,9 @@ public class PDFTransformSCPController {
         ssh.loadKnownHosts();
     }
 
-    @SoapAction(
-            value =
-                    "AdobeCommonServices_Source_CommonServices_ws_provider_PDFTransformationsSCPWS_Binder_PDFTransformationsScp")
+    @PayloadRoot(namespace = SOAP_NAMESPACE, localPart = "PDFTransformations")
     @ResponsePayload
-    public PDFTransformationsResponse transformPDFScpAction(
-            @RequestPayload PDFTransformations request) throws JsonProcessingException {
-        return transformPDFScp(request);
-    }
-
-    public PDFTransformationsResponse transformPDFScp(PDFTransformations request)
+    public PDFTransformationsResponse transformPDFScp(@RequestPayload PDFTransformations request)
             throws JsonProcessingException {
         File f = null;
         try {
@@ -127,15 +120,8 @@ public class PDFTransformSCPController {
         }
     }
 
-    @SoapAction(
-            value =
-                    "AdobeCommonServices_Source_CommonServices_ws_provider_PDFTransformationsSCPWS_Binder_PDFTransformationsByReferenceScp")
+    @PayloadRoot(namespace = SOAP_NAMESPACE, localPart = "PDFTransformationsByReference")
     @ResponsePayload
-    public PDFTransformationsResponse pdfTransformSCPByReferenceAction(
-            @RequestPayload PDFTransformations request) throws JsonProcessingException {
-        return pdfTransformSCPByReference(request);
-    }
-
     public PDFTransformationsResponse pdfTransformSCPByReference(
             @RequestPayload PDFTransformations request) throws JsonProcessingException {
         File f = null;
