@@ -29,7 +29,7 @@ public class TransformWSTests {
 
         ca.bc.gov.open.adobe.gateway.PDFTransformations req =
                 new ca.bc.gov.open.adobe.gateway.PDFTransformations();
-        req.setInputFileUrl("AAA");
+        req.setInputFile("AAA");
         req.setFlags(1);
 
         when(webServiceTemplate.marshalSendAndReceive(
@@ -67,7 +67,7 @@ public class TransformWSTests {
 
         ca.bc.gov.open.adobe.gateway.PDFTransformations req =
                 new ca.bc.gov.open.adobe.gateway.PDFTransformations();
-        req.setInputFileUrl("AAA");
+        req.setInputFile("AAA");
         req.setFlags(1);
 
         when(webServiceTemplate.marshalSendAndReceive(
