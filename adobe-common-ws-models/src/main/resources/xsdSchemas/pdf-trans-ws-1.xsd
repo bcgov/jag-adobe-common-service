@@ -23,20 +23,25 @@
         </xsd:complexType>
     </xsd:element>
 
-    <xsd:complexType name="PDFTransformations2">
-        <xsd:sequence>
-            <xsd:element name="inputFile" nillable="true" type="xsd:string"/>
-            <xsd:element name="flags" nillable="true" type="xsd:int"/>
-        </xsd:sequence>
-    </xsd:complexType>
+    <xsd:element name="PDFTransformations2">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="inputFile" nillable="true" type="xsd:string"/>
+                <xsd:element name="flags" nillable="true" type="xsd:int"/>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
 
-    <xsd:complexType name="PDFTransformationsResponse2">
-        <xsd:sequence>
-            <xsd:element name="outputFile" nillable="true" type="xsd:string"/>
-            <xsd:element name="statusVal" nillable="true" type="xsd:int"/>
-            <xsd:element name="statusMsg" nillable="true" type="xsd:string"/>
-        </xsd:sequence>
-    </xsd:complexType>
+    <xsd:element name="PDFTransformationsResponse2">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="outputFile" nillable="true" type="xsd:string"/>
+                <xsd:element name="statusVal" nillable="true" type="xsd:int"/>
+                <xsd:element name="statusMsg" nillable="true" type="xsd:string"/>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+
 
 </xsd:schema>
 

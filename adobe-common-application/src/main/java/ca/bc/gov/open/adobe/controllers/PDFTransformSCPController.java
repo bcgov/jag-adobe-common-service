@@ -22,9 +22,9 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.ws.client.core.WebServiceTemplate;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
-import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
+import org.springframework.ws.soap.server.endpoint.annotation.SoapAction;
 
 @Endpoint
 @Slf4j
@@ -72,8 +72,15 @@ public class PDFTransformSCPController {
         ssh.loadKnownHosts();
     }
 
-    @PayloadRoot(namespace = SOAP_NAMESPACE, localPart = "PDFTransformations")
+    @SoapAction(
+            value =
+                    "AdobeCommonServices_Source_CommonServices_ws_provider_PDFTransformationsSCPWS_Binder_PDFTransformationsScp")
     @ResponsePayload
+    public PDFTransformationsResponse2 transformPDFScpAction(
+            @RequestPayload PDFTransformations2 request) throws JsonProcessingException {
+        return transformPDFScp(request);
+    }
+
     public PDFTransformationsResponse2 transformPDFScp(@RequestPayload PDFTransformations2 request)
             throws JsonProcessingException {
         File f = null;
@@ -122,22 +129,30 @@ public class PDFTransformSCPController {
         }
     }
 
-    @PayloadRoot(namespace = SOAP_NAMESPACE, localPart = "PDFTransformationsByReference")
+    @SoapAction(
+            value =
+                    "AdobeCommonServices_Source_CommonServices_ws_provider_PDFTransformationsSCPWS_Binder_PDFTransformationsByReferenceScp")
     @ResponsePayload
+    public PDFTransformationsResponse pdfTransformSCPByReferenceAction(
+            @RequestPayload PDFTransformations request) throws JsonProcessingException {
+        return pdfTransformSCPByReference(request);
+    }
+
     public PDFTransformationsResponse pdfTransformSCPByReference(
             @RequestPayload PDFTransformations request) throws JsonProcessingException {
         File f = null;
         try {
             var gatewayResp =
-                    (ca.bc.gov.open.adobe.gateway.PDFTransformationsResponse)
+                    (ca.bc.gov.open.adobe.gateway.PDFTransformationsByReferenceResponse)
                             webServiceTemplate.marshalSendAndReceive(
                                     host,
                                     mapper.map(
                                             request,
-                                            ca.bc.gov.open.adobe.gateway.PDFTransformations.class));
+                                            ca.bc.gov.open.adobe.gateway
+                                                    .PDFTransformationsByReference.class));
 
             f = new File(tempFileDir + "TmpPDF" + UUID.randomUUID() + ".pdf");
-            FileUtils.writeByteArrayToFile(f, gatewayResp.getPDFTransformationsReturn());
+            FileUtils.writeByteArrayToFile(f, gatewayResp.getPDFTransformationsByReferenceReturn());
 
             // SCP the file to a server
             scpTransfer(request.getRemotehost(), request.getRemotefile(), f);
