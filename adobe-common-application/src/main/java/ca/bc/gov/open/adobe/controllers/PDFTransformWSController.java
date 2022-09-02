@@ -70,7 +70,7 @@ public class PDFTransformWSController {
                                     "Failed to send message to adobe LCG",
                                     "PDFTransformations",
                                     ex.getMessage(),
-                                    null)));
+                                    request)));
             out.setStatusVal(0);
             out.setStatusMsg(ex.getMessage());
             return out;
@@ -109,7 +109,7 @@ public class PDFTransformWSController {
                                     "Failed to send message to adobe LCG",
                                     "PDFTransformationsByReference",
                                     ex.getMessage(),
-                                    null)));
+                                    request)));
             out.setStatusVal(0);
             out.setStatusMsg(ex.getMessage());
             return out;

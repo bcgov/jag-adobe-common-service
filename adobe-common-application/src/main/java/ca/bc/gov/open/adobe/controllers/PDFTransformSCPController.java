@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import net.schmizz.sshj.SSHClient;
+import net.schmizz.sshj.common.SSHException;
 import net.schmizz.sshj.userauth.keyprovider.KeyProvider;
 import net.schmizz.sshj.xfer.FileSystemFile;
 import org.apache.commons.io.FileUtils;
@@ -115,7 +116,7 @@ public class PDFTransformSCPController {
                                     "Failed to send message to adobe LCG",
                                     "PDFTransformations",
                                     ex.getMessage(),
-                                    null)));
+                                    request)));
             var out = new PDFTransformationsResponse2();
             out.setStatusVal(0);
             out.setStatusMsg(ex.getMessage());
@@ -156,7 +157,6 @@ public class PDFTransformSCPController {
 
             // SCP the file to a server
             scpTransfer(request.getRemotehost(), request.getRemotefile(), f);
-
             log.info(
                     objectMapper.writeValueAsString(
                             new RequestSuccessLog("Request Success", "PDFTransformations")));
@@ -171,7 +171,7 @@ public class PDFTransformSCPController {
                                     "Failed to send message to adobe LCG",
                                     "PDFTransformations",
                                     ex.getMessage(),
-                                    null)));
+                                    request)));
             var out = new PDFTransformationsResponse();
             out.setStatusVal(0);
             out.setStatusMsg(ex.getMessage());
@@ -179,10 +179,16 @@ public class PDFTransformSCPController {
         }
     }
 
-    public boolean scpTransfer(String host, String dest, File payload) throws IOException {
+    public void scpTransfer(String host, String dest, File payload) throws IOException {
         KeyProvider keyProvider = ssh.loadKeys(prvtKey, pubKey, null);
-        ssh.authPublickey(sfegUserName, keyProvider);
-        ssh.connect(host);
+        try {
+            ssh.connect(host);
+            ssh.authPublickey(sfegUserName, keyProvider);
+        } catch (Exception ex) {
+            log.error("Failed to connect to remote host: " + host);
+            throw new SSHException("Failed to connect to remote host: " + host);
+        }
+
         try {
             // Not sure allowed but would be best
             ssh.useCompression();
@@ -190,14 +196,13 @@ public class PDFTransformSCPController {
                     .upload(
                             new FileSystemFile(payload.getAbsoluteFile().getPath()),
                             sfegUserName + "@" + sfegHost + ":" + dest);
-
-            return true;
         } catch (Exception ex) {
             log.error(
                     "Failed to scp file to remote: " + sfegUserName + "@" + sfegHost + ":" + dest);
+            throw new SSHException(
+                    "\"Failed to scp file to remote: \" + sfegUserName + \"@\" + sfegHost + \":\" + dest");
         } finally {
             ssh.disconnect();
         }
-        return false;
     }
 }
