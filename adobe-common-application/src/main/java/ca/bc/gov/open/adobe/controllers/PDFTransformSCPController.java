@@ -10,6 +10,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import net.schmizz.sshj.SSHClient;
@@ -99,7 +100,7 @@ public class PDFTransformSCPController {
             FileUtils.writeByteArrayToFile(f, gatewayResp.getPDFTransformationsReturn());
 
             // SCP the file to a server
-            scpTransfer(request.getRemotehost(), request.getRemotefile(), f);
+            scpTransfer(request.getRemotefile(), f);
 
             // Return the good response
             log.info(
@@ -157,7 +158,7 @@ public class PDFTransformSCPController {
             FileUtils.writeByteArrayToFile(f, gatewayResp.getPDFTransformationsByReferenceReturn());
 
             // SCP the file to a server
-            scpTransfer(request.getRemotehost(), request.getRemotefile(), f);
+            scpTransfer(request.getRemotefile(), f);
             log.info(
                     objectMapper.writeValueAsString(
                             new RequestSuccessLog("Request Success", "PDFTransformations")));
@@ -181,14 +182,25 @@ public class PDFTransformSCPController {
         }
     }
 
-    public void scpTransfer(String host, String dest, File payload) throws IOException {
+    public void scpTransfer(String dest, File payload) throws IOException {
         KeyProvider keyProvider = ssh.loadKeys(prvtKey, pubKey, null);
+        InetAddress address = InetAddress.getByName(sfegHost);
         try {
-            ssh.connect(host);
+            ssh.connect(address.getHostAddress());
             ssh.authPublickey(sfegUserName, keyProvider);
         } catch (Exception ex) {
-            log.error("Failed to connect to remote host: " + host);
-            throw new SSHException("Failed to connect to remote host: " + host);
+            log.error(
+                    "Failed to connect to SFEG host: "
+                            + sfegHost
+                            + "("
+                            + address.getHostAddress()
+                            + ")");
+            throw new SSHException(
+                    "Failed to connect to SFEG host: "
+                            + sfegHost
+                            + "("
+                            + address.getHostAddress()
+                            + ")");
         }
 
         try {
