@@ -106,7 +106,6 @@ public class PDFTransformSCPController {
             log.info(
                     objectMapper.writeValueAsString(
                             new RequestSuccessLog("Request Success", "PDFTransformations")));
-            f.delete();
             var out = new PDFTransformationsResponse2();
             out.setStatusVal(1);
             out.setStatusMsg("ok");
@@ -162,7 +161,6 @@ public class PDFTransformSCPController {
             log.info(
                     objectMapper.writeValueAsString(
                             new RequestSuccessLog("Request Success", "PDFTransformations")));
-            f.delete();
             var out = new PDFTransformationsResponse();
             out.setStatusMsg("ok");
             out.setStatusVal(1);
@@ -179,28 +177,24 @@ public class PDFTransformSCPController {
             out.setStatusVal(0);
             out.setStatusMsg(ex.getMessage());
             return out;
+        } finally {
+            if (f != null && f.exists()) {
+                if (!f.delete()) {
+                    log.warn("Failed to delete temp pdf file.");
+                }
+            }
         }
     }
 
     public void scpTransfer(String dest, File payload) throws IOException {
         KeyProvider keyProvider = ssh.loadKeys(prvtKey, pubKey, null);
-        InetAddress address = InetAddress.getByName(sfegHost);
         try {
+            InetAddress address = InetAddress.getByName(sfegHost);
             ssh.connect(address.getHostAddress());
             ssh.authPublickey(sfegUserName, keyProvider);
         } catch (Exception ex) {
-            log.error(
-                    "Failed to connect to SFEG host: "
-                            + sfegHost
-                            + "("
-                            + address.getHostAddress()
-                            + ")");
-            throw new SSHException(
-                    "Failed to connect to SFEG host: "
-                            + sfegHost
-                            + "("
-                            + address.getHostAddress()
-                            + ")");
+            log.error("Failed to connect to SFEG host: " + sfegHost);
+            throw new SSHException("Failed to connect to SFEG host: " + sfegHost);
         }
 
         try {
