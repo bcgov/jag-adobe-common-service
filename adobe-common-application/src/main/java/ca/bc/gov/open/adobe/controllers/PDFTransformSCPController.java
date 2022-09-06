@@ -105,6 +105,7 @@ public class PDFTransformSCPController {
             log.info(
                     objectMapper.writeValueAsString(
                             new RequestSuccessLog("Request Success", "PDFTransformations")));
+            f.delete();
             var out = new PDFTransformationsResponse2();
             out.setStatusVal(1);
             out.setStatusMsg("ok");
@@ -160,6 +161,7 @@ public class PDFTransformSCPController {
             log.info(
                     objectMapper.writeValueAsString(
                             new RequestSuccessLog("Request Success", "PDFTransformations")));
+            f.delete();
             var out = new PDFTransformationsResponse();
             out.setStatusMsg("ok");
             out.setStatusVal(1);
