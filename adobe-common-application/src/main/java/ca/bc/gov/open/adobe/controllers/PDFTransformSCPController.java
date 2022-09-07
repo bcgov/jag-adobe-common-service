@@ -185,6 +185,7 @@ public class PDFTransformSCPController {
             InetAddress address = InetAddress.getByName(sfegHost);
             jsch.addIdentity(".ssh/id_rsa");
             Session jschSession = jsch.getSession(sfegUserName, address.getHostAddress());
+            jschSession.setConfig("StrictHostKeyChecking", "no");
             jschSession.connect();
             channelSftp = (ChannelSftp) jschSession.openChannel("sftp");
         } catch (Exception ex) {
