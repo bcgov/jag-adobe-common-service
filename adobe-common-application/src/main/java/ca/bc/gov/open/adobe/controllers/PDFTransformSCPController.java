@@ -14,6 +14,7 @@ import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import java.io.File;
 import java.net.InetAddress;
+import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
@@ -30,12 +31,6 @@ import org.springframework.ws.soap.server.endpoint.annotation.SoapAction;
 @Endpoint
 @Slf4j
 public class PDFTransformSCPController {
-
-    @Value("${adobe.ssh.private-key}")
-    private String prvtKey = "";
-
-    @Value("${adobe.ssh.public-key}")
-    private String pubKey = "";
 
     @Value("${adobe.ssh.username}")
     private String sfegUserName = "";
@@ -97,12 +92,12 @@ public class PDFTransformSCPController {
             FileUtils.writeByteArrayToFile(f, gatewayResp.getPDFTransformationsReturn());
 
             // SCP the file to a server
-            scpTransfer(request.getRemotefile(), f);
+            sftpTransfer(request.getRemotefile(), f);
 
             // Return the good response
             log.info(
                     objectMapper.writeValueAsString(
-                            new RequestSuccessLog("Request Success", "PDFTransformations")));
+                            new RequestSuccessLog("Request Success", "transformPDFScp")));
             var out = new PDFTransformationsResponse2();
             out.setStatusVal(1);
             out.setStatusMsg("ok");
@@ -112,7 +107,7 @@ public class PDFTransformSCPController {
                     objectMapper.writeValueAsString(
                             new OrdsErrorLog(
                                     "Failed to send message to adobe LCG",
-                                    "PDFTransformations",
+                                    "transformPDFScp",
                                     ex.getMessage(),
                                     request)));
             var out = new PDFTransformationsResponse2();
@@ -154,10 +149,11 @@ public class PDFTransformSCPController {
             FileUtils.writeByteArrayToFile(f, gatewayResp.getPDFTransformationsByReferenceReturn());
 
             // SCP the file to a server
-            scpTransfer(request.getRemotefile(), f);
+            sftpTransfer(request.getRemotefile(), f);
             log.info(
                     objectMapper.writeValueAsString(
-                            new RequestSuccessLog("Request Success", "PDFTransformations")));
+                            new RequestSuccessLog(
+                                    "Request Success", "pdfTransformSCPByReference")));
             var out = new PDFTransformationsResponse();
             out.setStatusMsg("ok");
             out.setStatusVal(1);
@@ -167,7 +163,7 @@ public class PDFTransformSCPController {
                     objectMapper.writeValueAsString(
                             new OrdsErrorLog(
                                     "Failed to send message to adobe LCG",
-                                    "PDFTransformations",
+                                    "pdfTransformSCPByReference",
                                     ex.getMessage(),
                                     request)));
             var out = new PDFTransformationsResponse();
@@ -183,13 +179,12 @@ public class PDFTransformSCPController {
         }
     }
 
-    public void scpTransfer(String dest, File payload) throws JSchException {
+    public void sftpTransfer(String dest, File payload) throws JSchException {
         ChannelSftp channelSftp = null;
         jsch.setKnownHosts(".ssh/known_hosts");
         try {
             InetAddress address = InetAddress.getByName(sfegHost);
-            //            jsch.addIdentity(null, prvtKey.getBytes(StandardCharsets.UTF_8),
-            // pubKey.getBytes(StandardCharsets.UTF_8), null);
+            jsch.addIdentity(".ssh/id_rsa");
             Session jschSession = jsch.getSession(sfegUserName, address.getHostAddress());
             jschSession.connect();
             channelSftp = (ChannelSftp) jschSession.openChannel("sftp");
