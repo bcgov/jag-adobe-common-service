@@ -6,7 +6,9 @@ import ca.bc.gov.open.adobe.controllers.PDFTransformSCPController;
 import ca.bc.gov.open.adobe.exceptions.AdobeLCGException;
 import ca.bc.gov.open.adobe.scp.PDFTransformations;
 import ca.bc.gov.open.adobe.scp.PDFTransformations2;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jcraft.jsch.JSchException;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import org.junit.jupiter.api.Assertions;
@@ -30,7 +32,7 @@ public class TransformSCPTests {
     @Mock private PDFTransformSCPController controller;
 
     @Test
-    public void transformPDFScpSuccessTest() throws IOException {
+    public void transformPDFScpSuccessTest() throws IOException, JSchException {
         var req = new PDFTransformations2();
         req.setFlags(1);
         req.setRemotefile("A");
@@ -53,7 +55,7 @@ public class TransformSCPTests {
     }
 
     @Test
-    public void transformPDFByReferenceScpSuccessTest() throws IOException {
+    public void transformPDFByReferenceScpSuccessTest() throws JsonProcessingException {
         var req = new PDFTransformations();
         req.setInputFileUrl("A");
 
@@ -70,7 +72,7 @@ public class TransformSCPTests {
     }
 
     @Test
-    public void transformPDFByReferenceScpFailTest() throws IOException {
+    public void transformPDFByReferenceScpFailTest() throws JsonProcessingException {
         var req = new PDFTransformations();
         req.setInputFileUrl("A");
 
@@ -86,7 +88,7 @@ public class TransformSCPTests {
     }
 
     @Test
-    public void transformPDFScpFailTest() throws IOException {
+    public void transformPDFScpFailTest() throws JsonProcessingException {
         var req = new PDFTransformations2();
         req.setFlags(1);
         req.setRemotefile("A");

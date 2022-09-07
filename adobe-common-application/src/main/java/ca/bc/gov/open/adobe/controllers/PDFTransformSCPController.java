@@ -8,15 +8,14 @@ import ca.bc.gov.open.adobe.scp.PDFTransformationsResponse;
 import ca.bc.gov.open.adobe.scp.PDFTransformationsResponse2;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jcraft.jsch.ChannelSftp;
+import com.jcraft.jsch.JSch;
+import com.jcraft.jsch.JSchException;
+import com.jcraft.jsch.Session;
 import java.io.File;
-import java.io.IOException;
 import java.net.InetAddress;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
-import net.schmizz.sshj.SSHClient;
-import net.schmizz.sshj.common.SSHException;
-import net.schmizz.sshj.userauth.keyprovider.KeyProvider;
-import net.schmizz.sshj.xfer.FileSystemFile;
 import org.apache.commons.io.FileUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,7 +56,7 @@ public class PDFTransformSCPController {
 
     private final WebServiceTemplate webServiceTemplate;
     private final String tempFileDir = "temp-pdfs/";
-    private final SSHClient ssh;
+    private JSch jsch = null;
 
     private final ModelMapper mapper;
 
@@ -65,13 +64,11 @@ public class PDFTransformSCPController {
     public PDFTransformSCPController(
             ObjectMapper objectMapper,
             @Qualifier("transformWS") WebServiceTemplate webServiceTemplate,
-            ModelMapper mapper)
-            throws IOException {
+            ModelMapper mapper) {
         this.mapper = mapper;
         this.objectMapper = objectMapper;
         this.webServiceTemplate = webServiceTemplate;
-        ssh = new SSHClient();
-        ssh.loadKnownHosts();
+        jsch = new JSch();
     }
 
     @SoapAction(
@@ -186,31 +183,37 @@ public class PDFTransformSCPController {
         }
     }
 
-    public void scpTransfer(String dest, File payload) throws IOException {
-        KeyProvider keyProvider = ssh.loadKeys(prvtKey, pubKey, null);
+    public void scpTransfer(String dest, File payload) throws JSchException {
+        ChannelSftp channelSftp = null;
+        jsch.setKnownHosts(".ssh/known_hosts");
         try {
             InetAddress address = InetAddress.getByName(sfegHost);
-            ssh.connect(address.getHostAddress());
-            ssh.authPublickey(sfegUserName, keyProvider);
+            //            jsch.addIdentity(null, prvtKey.getBytes(StandardCharsets.UTF_8),
+            // pubKey.getBytes(StandardCharsets.UTF_8), null);
+            Session jschSession = jsch.getSession(sfegUserName, address.getHostAddress());
+            jschSession.connect();
+            channelSftp = (ChannelSftp) jschSession.openChannel("sftp");
         } catch (Exception ex) {
             log.error("Failed to connect to SFEG host: " + sfegHost);
-            throw new SSHException("Failed to connect to SFEG host: " + sfegHost);
+            throw new JSchException(ex.getMessage());
         }
 
         try {
-            // Not sure allowed but would be best
-            ssh.useCompression();
-            ssh.newSCPFileTransfer()
-                    .upload(
-                            new FileSystemFile(payload.getAbsoluteFile().getPath()),
-                            sfegUserName + "@" + sfegHost + ":" + dest);
+            channelSftp.put(
+                    payload.getAbsoluteFile().getPath(),
+                    sfegUserName + "@" + sfegHost + ":" + dest);
         } catch (Exception ex) {
             log.error(
-                    "Failed to scp file to remote: " + sfegUserName + "@" + sfegHost + ":" + dest);
-            throw new SSHException(
-                    "Failed to scp file to remote: " + sfegUserName + "@" + sfegHost + ":" + dest);
+                    "Failed to transfer file to remote: "
+                            + sfegUserName
+                            + "@"
+                            + sfegHost
+                            + ":"
+                            + dest);
+            throw new JSchException(ex.getMessage());
         } finally {
-            ssh.disconnect();
+            channelSftp.exit();
+            channelSftp.disconnect();
         }
     }
 }
