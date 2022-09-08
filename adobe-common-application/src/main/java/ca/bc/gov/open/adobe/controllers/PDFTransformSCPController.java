@@ -13,12 +13,12 @@ import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.net.InetAddress;
-import java.nio.file.Paths;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -196,10 +196,9 @@ public class PDFTransformSCPController {
         }
 
         try {
-            String sftpRemoteFilename = FilenameUtils.separatorsToUnix(Paths.get(dest).toString());
-            log.info(
-                    "src: " + payload.getAbsoluteFile().getPath() + " dest: " + sftpRemoteFilename);
-            channelSftp.put(payload.getAbsoluteFile().getPath(), sftpRemoteFilename);
+            log.info("src:" + payload.getAbsoluteFile().getPath() + " dest:" + dest);
+            InputStream fs = new FileInputStream(payload.getAbsoluteFile().getPath());
+            channelSftp.put(fs, dest);
         } catch (Exception ex) {
             log.error(
                     "Failed to transfer file to remote: "
