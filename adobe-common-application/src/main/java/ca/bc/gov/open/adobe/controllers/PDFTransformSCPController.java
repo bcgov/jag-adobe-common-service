@@ -13,8 +13,6 @@ import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
 import java.net.InetAddress;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
@@ -190,6 +188,7 @@ public class PDFTransformSCPController {
             jschSession.setConfig("StrictHostKeyChecking", "no");
             jschSession.connect();
             channelSftp = (ChannelSftp) jschSession.openChannel("sftp");
+            channelSftp.connect();
         } catch (Exception ex) {
             log.error("Failed to connect to SFEG host: " + sfegHost);
             throw new JSchException(ex.getMessage());
@@ -197,8 +196,7 @@ public class PDFTransformSCPController {
 
         try {
             log.info("src:" + payload.getAbsoluteFile().getPath() + " dest:" + dest);
-            InputStream fs = new FileInputStream(payload.getAbsoluteFile().getPath());
-            channelSftp.put(fs, dest);
+            channelSftp.put(payload.getAbsoluteFile().getPath(), dest);
         } catch (Exception ex) {
             log.error(
                     "Failed to transfer file to remote: "
