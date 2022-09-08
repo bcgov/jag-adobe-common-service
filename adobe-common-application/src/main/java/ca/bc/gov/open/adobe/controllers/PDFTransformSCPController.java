@@ -40,6 +40,9 @@ public class PDFTransformSCPController {
     @Value("${adobe.ssh.nfs-dir}")
     private String nfsDir = "";
 
+    @Value("${adobe.ssh.grp-id}")
+    private String grpId = "";
+
     @Value("${adobe.lifecycle-host}")
     private String host = "https://127.0.0.1/";
 
@@ -180,6 +183,8 @@ public class PDFTransformSCPController {
 
     public void sftpTransfer(String dest, File payload) throws JSchException {
         ChannelSftp channelSftp = null;
+        dest = nfsDir + dest.substring(dest.indexOf("objstr_zd/") + "objstr_zd/".length());
+
         jsch.setKnownHosts(".ssh/known_hosts");
         try {
             InetAddress address = InetAddress.getByName(sfegHost);
@@ -189,13 +194,20 @@ public class PDFTransformSCPController {
             jschSession.connect();
             channelSftp = (ChannelSftp) jschSession.openChannel("sftp");
             channelSftp.connect();
+            channelSftp.chgrp(Integer.valueOf(grpId), dest);
         } catch (Exception ex) {
             log.error("Failed to connect to SFEG host: " + sfegHost);
             throw new JSchException(ex.getMessage());
         }
 
         try {
-            log.info("src:" + payload.getAbsoluteFile().getPath() + " dest:" + dest);
+            log.info(
+                    "grpId:"
+                            + Integer.valueOf(grpId)
+                            + " src:"
+                            + payload.getAbsoluteFile().getPath()
+                            + " dest:"
+                            + dest);
             channelSftp.put(payload.getAbsoluteFile().getPath(), dest);
         } catch (Exception ex) {
             log.error(
