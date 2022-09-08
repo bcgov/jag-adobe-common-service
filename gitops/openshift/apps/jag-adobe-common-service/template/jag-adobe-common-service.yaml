@@ -145,6 +145,11 @@ objects:
                 secretKeyRef:
                   name: adobe-common-service-application-secrets
                   key: NFS_DIR
+            - name: GROUP_ID
+              valueFrom:
+                secretKeyRef:
+                  name: adobe-common-service-application-secrets
+                  key: GROUP_ID
             - name: SSH_PRIVATE_KEY
               valueFrom:
                 secretKeyRef:
