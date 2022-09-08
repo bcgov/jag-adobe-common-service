@@ -195,9 +195,7 @@ public class PDFTransformSCPController {
 
         try {
             log.info("src: " + payload.getAbsoluteFile().getPath());
-            channelSftp.put(
-                    payload.getAbsoluteFile().getPath(),
-                    sfegUserName + "@" + sfegHost + ":" + dest);
+            channelSftp.put(payload.getAbsoluteFile().getPath(), dest);
         } catch (Exception ex) {
             log.error(
                     "Failed to transfer file to remote: "
