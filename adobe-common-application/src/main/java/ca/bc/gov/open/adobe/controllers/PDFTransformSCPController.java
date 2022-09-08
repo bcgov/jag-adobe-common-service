@@ -194,7 +194,6 @@ public class PDFTransformSCPController {
             jschSession.connect();
             channelSftp = (ChannelSftp) jschSession.openChannel("sftp");
             channelSftp.connect();
-            channelSftp.chgrp(Integer.valueOf(grpId), dest);
         } catch (Exception ex) {
             log.error("Failed to connect to SFEG host: " + sfegHost);
             throw new JSchException(ex.getMessage());
@@ -208,6 +207,7 @@ public class PDFTransformSCPController {
                             + payload.getAbsoluteFile().getPath()
                             + " dest:"
                             + dest);
+            channelSftp.chgrp(Integer.valueOf(grpId), dest);
             channelSftp.put(payload.getAbsoluteFile().getPath(), dest);
         } catch (Exception ex) {
             log.error(
