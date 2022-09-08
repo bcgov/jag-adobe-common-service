@@ -194,6 +194,7 @@ public class PDFTransformSCPController {
         }
 
         try {
+            log.info("src: " + payload.getAbsoluteFile().getPath());
             channelSftp.put(
                     payload.getAbsoluteFile().getPath(),
                     sfegUserName + "@" + sfegHost + ":" + dest);
