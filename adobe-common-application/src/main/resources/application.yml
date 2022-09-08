@@ -9,6 +9,7 @@ adobe:
     username: ${SFEG_USERNAME}
     host: ${SFEG_HOST}
     nfs-dir: ${NFS_DIR}
+    grp-id: ${GROUP_ID}
 management:
   endpoints:
     web:
