@@ -40,6 +40,10 @@ SPLUNK_TOKEN: The bearer token to authenticate the application.
 SPLUNK_INDEX: The index that the application will push logs to. The index must be created in splunk
 before they can be pushed to.
 
+NFS_DIR: SFEG target directory for NFS transfer
+
+GROUP_ID: Group ID for access NFS directory
+
 ### Building the Application
 1) Set intellij to use java 11 for the project modals and sdk
 2) Run ``mvn compile``
@@ -82,6 +86,10 @@ SPLUNK_HTTP_URL
 SPLUNK_TOKEN
 
 SPLUNK_INDEX
+
+GROUP_ID
+
+NFS_DIR
 
 
 4) Create POM goals: clean install, spring-boot:run  (when running locally).
