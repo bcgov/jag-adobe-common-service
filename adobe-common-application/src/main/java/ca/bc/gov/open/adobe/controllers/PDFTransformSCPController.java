@@ -183,8 +183,8 @@ public class PDFTransformSCPController {
 
     public void sftpTransfer(String dest, File payload) throws JSchException {
         ChannelSftp channelSftp = null;
-        dest = nfsDir + dest.substring(dest.indexOf("objstr_zd/") + "objstr_zd/".length());
-
+        //        dest = nfsDir + dest.substring(dest.indexOf("objstr_zd/") +
+        // "objstr_zd/".length());
         jsch.setKnownHosts(".ssh/known_hosts");
         try {
             InetAddress address = InetAddress.getByName(sfegHost);
