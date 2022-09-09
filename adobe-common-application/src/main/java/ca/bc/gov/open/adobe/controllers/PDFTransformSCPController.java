@@ -208,7 +208,7 @@ public class PDFTransformSCPController {
                             + " dest:"
                             + dest);
             channelSftp.chgrp(Integer.valueOf(grpId), dest);
-//            channelSftp.chmod(777, dest);
+            //            channelSftp.chmod(777, dest);
             channelSftp.put(payload.getAbsoluteFile().getPath(), dest);
         } catch (Exception ex) {
             log.error(
