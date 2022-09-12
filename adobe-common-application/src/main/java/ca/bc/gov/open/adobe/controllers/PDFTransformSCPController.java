@@ -182,6 +182,7 @@ public class PDFTransformSCPController {
     }
 
     public void sftpTransfer(String dest, File payload) throws JSchException {
+        Session jschSession = null;
         ChannelSftp channelSftp = null;
         //        dest = nfsDir + dest.substring(dest.indexOf("objstr_zd/") +
         // "objstr_zd/".length());
@@ -189,7 +190,7 @@ public class PDFTransformSCPController {
         try {
             InetAddress address = InetAddress.getByName(sfegHost);
             jsch.addIdentity(".ssh/id_rsa");
-            Session jschSession = jsch.getSession(sfegUserName, address.getHostAddress());
+            jschSession = jsch.getSession(sfegUserName, address.getHostAddress());
             jschSession.setConfig("StrictHostKeyChecking", "no");
             jschSession.connect();
             channelSftp = (ChannelSftp) jschSession.openChannel("sftp");
@@ -221,6 +222,7 @@ public class PDFTransformSCPController {
         } finally {
             channelSftp.exit();
             channelSftp.disconnect();
+            jschSession.disconnect();
         }
     }
 }
