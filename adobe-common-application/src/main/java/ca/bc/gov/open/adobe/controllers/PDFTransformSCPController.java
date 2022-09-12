@@ -208,8 +208,10 @@ public class PDFTransformSCPController {
                             + payload.getAbsoluteFile().getPath()
                             + " dest:"
                             + dest);
-            channelSftp.chgrp(Integer.valueOf(grpId), dest);
+            channelSftp.chgrp(Integer.valueOf(grpId), "/data/mkdir_test");
             channelSftp.mkdir("/data/mkdir_test");
+
+            channelSftp.chgrp(Integer.valueOf(grpId), dest);
             channelSftp.put(payload.getAbsoluteFile().getPath(), dest);
         } catch (Exception ex) {
             log.error(
