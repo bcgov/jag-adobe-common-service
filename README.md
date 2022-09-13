@@ -107,4 +107,4 @@ SFTP_PRIVATE_KEY
 
 ### Note
 1) spring-starters-bom and spring-sftp-starter are libs branched from ```https://github.com/bcgov/spring-boot-starters```
-2) id_rsa_pseudo is merely a pseudo key, used to pass unit test in maven package for git pipeline
+2) id_rsa.pseudo is merely a pseudo key, used to pass unit test in maven package for git pipeline
