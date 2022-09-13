@@ -122,8 +122,7 @@ public class SftpServiceImplTest {
 
     @Test
     public void forPutWithInputstreamShouldPutFile() {
-        Assertions.assertDoesNotThrow(
-                () -> sut.put(new ByteArrayInputStream(FAKE_INPUT_STREAM.getBytes()), CASE_1));
+        Assertions.assertDoesNotThrow(() -> sut.put(FILE_1, CASE_1));
     }
 
     @Test
@@ -135,7 +134,7 @@ public class SftpServiceImplTest {
         Assertions.assertThrows(
                 StarterSftpException.class,
                 () -> {
-                    sut.put(new ByteArrayInputStream(FAKE_INPUT_STREAM.getBytes()), CASE_2);
+                    sut.put(FILE_1, CASE_2);
                 });
     }
 }

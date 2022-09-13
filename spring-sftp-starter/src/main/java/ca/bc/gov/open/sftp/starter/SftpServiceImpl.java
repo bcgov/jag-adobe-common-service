@@ -102,7 +102,7 @@ public class SftpServiceImpl implements SftpService {
     }
 
     @Override
-    public void put(InputStream inputStream, String remoteFileName) {
+    public void put(String inputFileName, String remoteFileName) {
         String sftpRemoteFilename;
         if (remoteFileName.contains("objstr_zd/")) {
             sftpRemoteFilename =
@@ -115,7 +115,7 @@ public class SftpServiceImpl implements SftpService {
 
         executeSftpFunction(
                 channelSftp -> {
-                    channelSftp.put(inputStream, sftpRemoteFilename);
+                    channelSftp.put(inputFileName, sftpRemoteFilename);
                     logger.debug("Successfully uploaded file [{}]", remoteFileName);
                 });
     }

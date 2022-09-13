@@ -13,7 +13,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jcraft.jsch.JSch;
 import java.io.File;
-import java.io.FileInputStream;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
@@ -198,6 +197,6 @@ public class PDFTransformSCPController {
                 new JschSessionProvider(new JSch(), sftpProperties);
 
         SftpServiceImpl sftpService = new SftpServiceImpl(jschSessionProvider, sftpProperties);
-        sftpService.put(new FileInputStream(payload), dest);
+        sftpService.put(payload.getAbsoluteFile().getPath(), dest);
     }
 }
