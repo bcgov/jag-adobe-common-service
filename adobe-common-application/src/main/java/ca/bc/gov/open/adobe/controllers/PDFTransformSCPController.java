@@ -193,15 +193,11 @@ public class PDFTransformSCPController {
         }
     }
 
-    public void sftpTransfer(String dest, File payload) {
+    public void sftpTransfer(String dest, File payload) throws Exception {
         JschSessionProvider jschSessionProvider =
                 new JschSessionProvider(new JSch(), sftpProperties);
 
         SftpServiceImpl sftpService = new SftpServiceImpl(jschSessionProvider, sftpProperties);
-        try {
-            sftpService.put(new FileInputStream(payload), dest);
-        } catch (Exception ex) {
-            log.error(ex.getMessage());
-        }
+        sftpService.put(new FileInputStream(payload), dest);
     }
 }
