@@ -64,6 +64,10 @@ public class SftpProperties {
         return remoteLocation;
     }
 
+    public void setRemoteLocation(String remoteLocation) {
+        this.remoteLocation = remoteLocation;
+    }
+
     public String getKnownHostsFileName() {
         return knownHostsFileName;
     }
@@ -76,8 +80,16 @@ public class SftpProperties {
         return sshPrivateKey;
     }
 
+    public void setSshPrivateKey(String sshPrivateKey) {
+        this.sshPrivateKey = sshPrivateKey;
+    }
+
     public String getSshPrivatePassphrase() {
         return sshPrivatePassphrase;
+    }
+
+    public void setSshPrivatePassphrase(String sshPrivatePassphrase) {
+        this.sshPrivatePassphrase = sshPrivatePassphrase;
     }
 
     public SftpProperties() {}
