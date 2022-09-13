@@ -24,7 +24,7 @@ public class JschSessionProvider {
     private Session doGetSession() throws JSchException {
 
         Session session = jSch.getSession(sftpProperties.getUsername(), sftpProperties.getHost());
-
+        session.setConfig("StrictHostKeyChecking", "no");
         if (StringUtils.isBlank(sftpProperties.getSshPrivateKey())
                 && StringUtils.isNotBlank(sftpProperties.getPassword())) {
             session.setPassword(sftpProperties.getPassword());
