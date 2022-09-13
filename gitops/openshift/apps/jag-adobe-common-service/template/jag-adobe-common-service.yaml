@@ -155,11 +155,6 @@ objects:
                 secretKeyRef:
                   name: adobe-common-service-application-secrets
                   key: SFTP_KNOWN_HOSTS
-            - name: SFTP_KNOWN_HOSTS
-              valueFrom:
-                secretKeyRef:
-                  name: adobe-common-service-application-secrets
-                  key: SFTP_KNOWN_HOSTS
             - name: SSH_PRIVATE_KEY
               valueFrom:
                 secretKeyRef:
