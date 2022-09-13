@@ -12,9 +12,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.ws.client.core.WebServiceTemplate;
@@ -23,9 +23,11 @@ import org.springframework.ws.client.core.WebServiceTemplate;
 @ActiveProfiles("test")
 public class DiagnosticControllerTests {
 
-    @Autowired private ObjectMapper objectMapper;
+    @InjectMocks private ObjectMapper objectMapper;
 
     @Mock private WebServiceTemplate webServiceTemplate;
+
+    @Mock private PDFDiagnosticController controller;
 
     @Test
     public void getPDFDiagnosticSuccessTest() throws JsonProcessingException {
@@ -39,8 +41,7 @@ public class DiagnosticControllerTests {
                         Mockito.anyString(), Mockito.any(PDFDiagnostics.class)))
                 .thenReturn(response);
 
-        PDFDiagnosticController controller =
-                new PDFDiagnosticController(objectMapper, webServiceTemplate);
+        controller = new PDFDiagnosticController(objectMapper, webServiceTemplate);
         var resp = controller.getPDFDiagnostic(req);
 
         Assertions.assertSame(response, resp);
@@ -58,8 +59,7 @@ public class DiagnosticControllerTests {
                         Mockito.anyString(), Mockito.any(PDFDiagnosticsByReference.class)))
                 .thenReturn(response);
 
-        PDFDiagnosticController controller =
-                new PDFDiagnosticController(objectMapper, webServiceTemplate);
+        controller = new PDFDiagnosticController(objectMapper, webServiceTemplate);
         var resp = controller.getPDFDiagnosticByReference(req);
 
         Assertions.assertSame(response, resp);
@@ -74,8 +74,7 @@ public class DiagnosticControllerTests {
                         Mockito.anyString(), Mockito.any(PDFDiagnostics.class)))
                 .thenThrow(new AdobeLCGException());
 
-        PDFDiagnosticController controller =
-                new PDFDiagnosticController(objectMapper, webServiceTemplate);
+        controller = new PDFDiagnosticController(objectMapper, webServiceTemplate);
 
         var resp = controller.getPDFDiagnostic(new PDFDiagnostics());
 
@@ -93,8 +92,7 @@ public class DiagnosticControllerTests {
                         Mockito.anyString(), Mockito.any(PDFDiagnosticsByReference.class)))
                 .thenThrow(new AdobeLCGException());
 
-        PDFDiagnosticController controller =
-                new PDFDiagnosticController(objectMapper, webServiceTemplate);
+        controller = new PDFDiagnosticController(objectMapper, webServiceTemplate);
 
         var resp = controller.getPDFDiagnosticByReference(new PDFDiagnosticsByReference());
 

@@ -9,9 +9,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.ws.client.core.WebServiceTemplate;
@@ -20,9 +20,11 @@ import org.springframework.ws.client.core.WebServiceTemplate;
 @ActiveProfiles("test")
 public class TransformWSTests {
 
-    @Autowired private ObjectMapper objectMapper;
+    @InjectMocks private ObjectMapper objectMapper;
 
     @Mock private WebServiceTemplate webServiceTemplate;
+
+    @Mock private PDFTransformWSController controller;
 
     @Test
     public void transformPDFWSSuccessTest() throws JsonProcessingException {
@@ -36,8 +38,7 @@ public class TransformWSTests {
                         Mockito.anyString(), Mockito.any(PDFTransformations.class)))
                 .thenReturn("AAAAA");
 
-        PDFTransformWSController controller =
-                new PDFTransformWSController(objectMapper, webServiceTemplate);
+        controller = new PDFTransformWSController(objectMapper, webServiceTemplate);
 
         var resp = controller.transformPDFWS(req);
 
@@ -54,8 +55,7 @@ public class TransformWSTests {
                         Mockito.anyString(), Mockito.any(PDFTransformations.class)))
                 .thenReturn("AAAAA");
 
-        PDFTransformWSController controller =
-                new PDFTransformWSController(objectMapper, webServiceTemplate);
+        controller = new PDFTransformWSController(objectMapper, webServiceTemplate);
 
         var resp = controller.transformPDFByReference(req);
 
@@ -74,8 +74,7 @@ public class TransformWSTests {
                         Mockito.anyString(), Mockito.any(PDFTransformations.class)))
                 .thenThrow(new AdobeLCGException());
 
-        PDFTransformWSController controller =
-                new PDFTransformWSController(objectMapper, webServiceTemplate);
+        controller = new PDFTransformWSController(objectMapper, webServiceTemplate);
 
         var resp = controller.transformPDFWS(req);
 
@@ -92,8 +91,7 @@ public class TransformWSTests {
                         Mockito.anyString(), Mockito.any(PDFTransformations.class)))
                 .thenThrow(new AdobeLCGException());
 
-        PDFTransformWSController controller =
-                new PDFTransformWSController(objectMapper, webServiceTemplate);
+        controller = new PDFTransformWSController(objectMapper, webServiceTemplate);
 
         var resp = controller.transformPDFByReference(req);
 

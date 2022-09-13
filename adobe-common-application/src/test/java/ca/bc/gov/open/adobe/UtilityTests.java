@@ -5,7 +5,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.mockito.InjectMocks;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
@@ -18,7 +18,7 @@ import org.springframework.test.web.servlet.MockMvc;
 @AutoConfigureMockMvc
 public class UtilityTests {
 
-    @Autowired private MockMvc mockMvc;
+    @InjectMocks private MockMvc mockMvc;
 
     @Test
     public void securityTestFail_Then401() throws Exception {

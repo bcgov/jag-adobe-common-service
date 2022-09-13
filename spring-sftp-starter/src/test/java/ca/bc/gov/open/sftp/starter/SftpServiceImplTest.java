@@ -127,7 +127,7 @@ public class SftpServiceImplTest {
     }
 
     @Test
-    public void forPutWithSftpExceptionShouldTrhowDpsSftpException() throws SftpException {
+    public void forPutWithSftpExceptionShouldThrowDpsSftpException() throws SftpException {
         String value = "some text";
         Mockito.doThrow(SftpException.class)
                 .when(channelSftpMock)

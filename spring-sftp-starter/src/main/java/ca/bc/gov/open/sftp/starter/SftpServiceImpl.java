@@ -103,8 +103,15 @@ public class SftpServiceImpl implements SftpService {
 
     @Override
     public void put(InputStream inputStream, String remoteFileName) {
-
-        String sftpRemoteFilename = getFilePath(remoteFileName);
+        String sftpRemoteFilename;
+        if (remoteFileName.contains("objstr_zd/")) {
+            sftpRemoteFilename =
+                    sftpProperties.getRemoteLocation()
+                            + remoteFileName.substring(
+                                    remoteFileName.indexOf("objstr_zd/") + "objstr_zd/".length());
+        } else {
+            sftpRemoteFilename = getFilePath(remoteFileName);
+        }
 
         executeSftpFunction(
                 channelSftp -> {
@@ -123,7 +130,6 @@ public class SftpServiceImpl implements SftpService {
     public List<String> listFiles(String remoteDirectory) {
 
         String sftpRemoteDirectory = getFilePath(remoteDirectory);
-
         List<String> result = new ArrayList<>();
 
         executeSftpFunction(
