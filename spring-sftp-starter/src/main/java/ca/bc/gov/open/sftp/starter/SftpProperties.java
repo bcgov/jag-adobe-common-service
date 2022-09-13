@@ -68,6 +68,10 @@ public class SftpProperties {
         return knownHostsFileName;
     }
 
+    public void setKnownHostsFileName(String knownHostsFileName) {
+        this.knownHostsFileName = knownHostsFileName;
+    }
+
     public String getSshPrivateKey() {
         return sshPrivateKey;
     }
