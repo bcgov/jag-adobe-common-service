@@ -9,8 +9,6 @@ import ca.bc.gov.open.adobe.scp.PDFTransformations2;
 import ca.bc.gov.open.sftp.starter.SftpProperties;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jcraft.jsch.JSch;
-import com.jcraft.jsch.JSchException;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import org.junit.jupiter.api.Assertions;
