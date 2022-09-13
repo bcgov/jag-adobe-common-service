@@ -5,11 +5,16 @@ security:
 
 adobe:
   lifecycle-host: ${LIFECYCLE_HOST}
-  ssh:
+
+bcgov:
+  sftp:
+    host: ${SFEG_HOST:localhost}
+    port: ${SFEG_PORT:22}
     username: ${SFEG_USERNAME}
-    host: ${SFEG_HOST}
-    nfs-dir: ${NFS_DIR}
-    grp-id: ${GROUP_ID}
+    remote-location: ${NFS_DIR}
+    known-hosts-file-name: ${SFTP_KNOWN_HOSTS}
+    ssh-private-key: ${SFTP_PRIVATE_KEY}
+
 management:
   endpoints:
     web:

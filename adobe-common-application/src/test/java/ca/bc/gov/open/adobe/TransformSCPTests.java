@@ -6,8 +6,10 @@ import ca.bc.gov.open.adobe.controllers.PDFTransformSCPController;
 import ca.bc.gov.open.adobe.exceptions.AdobeLCGException;
 import ca.bc.gov.open.adobe.scp.PDFTransformations;
 import ca.bc.gov.open.adobe.scp.PDFTransformations2;
+import ca.bc.gov.open.sftp.starter.SftpProperties;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -27,12 +29,14 @@ public class TransformSCPTests {
 
     @Autowired private ObjectMapper objectMapper;
 
+    @Autowired private SftpProperties sftpProperties;
+
     @Mock private WebServiceTemplate webServiceTemplate;
 
     @Mock private PDFTransformSCPController controller;
 
     @Test
-    public void transformPDFScpSuccessTest() throws IOException, JSchException {
+    public void transformPDFScpSuccessTest() throws IOException {
         var req = new PDFTransformations2();
         req.setFlags(1);
         req.setRemotefile("A");
@@ -40,7 +44,8 @@ public class TransformSCPTests {
         req.setRemotehost("A");
 
         controller =
-                new PDFTransformSCPController(objectMapper, webServiceTemplate, new ModelMapper());
+                new PDFTransformSCPController(
+                        objectMapper, webServiceTemplate, new ModelMapper(), sftpProperties);
         controller = spy(controller);
 
         byte[] a = "AAAAAAAAAA".getBytes(StandardCharsets.UTF_8);
@@ -65,7 +70,8 @@ public class TransformSCPTests {
                 .thenReturn(a);
 
         controller =
-                new PDFTransformSCPController(objectMapper, webServiceTemplate, new ModelMapper());
+                new PDFTransformSCPController(
+                        objectMapper, webServiceTemplate, new ModelMapper(), sftpProperties);
         var resp = controller.pdfTransformSCPByReference(req);
 
         Assertions.assertNotNull(resp);
@@ -81,7 +87,8 @@ public class TransformSCPTests {
                 .thenThrow(new AdobeLCGException());
 
         controller =
-                new PDFTransformSCPController(objectMapper, webServiceTemplate, new ModelMapper());
+                new PDFTransformSCPController(
+                        objectMapper, webServiceTemplate, new ModelMapper(), sftpProperties);
         var resp = controller.pdfTransformSCPByReference(req);
 
         Assertions.assertNotNull(resp);
@@ -96,7 +103,8 @@ public class TransformSCPTests {
         req.setRemotehost("A");
 
         controller =
-                new PDFTransformSCPController(objectMapper, webServiceTemplate, new ModelMapper());
+                new PDFTransformSCPController(
+                        objectMapper, webServiceTemplate, new ModelMapper(), sftpProperties);
         controller = spy(controller);
 
         when(webServiceTemplate.marshalSendAndReceive(

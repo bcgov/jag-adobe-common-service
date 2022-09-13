@@ -5,10 +5,13 @@ security:
 
 adobe:
   lifecycle-host: http://127.0.0.1/
-  ssh:
-    private-key: ${BASIC_AUTH_PASS}
-    public-key: ${BASIC_AUTH_PASS}
-    username: ${BASIC_AUTH_USER}
+
+bcgov:
+  sftp:
     host: http://127.0.0.1/
-    nfs-dir: /
-    grp-id: 0
+    port: 22
+    username: ${BASIC_AUTH_USER}
+    remote-location: /
+    known-hosts-file-name: /
+    allow-unknown-keys: true
+    ssh-private-key: ${SFTP_PRIVATE_KEY}

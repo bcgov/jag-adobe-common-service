@@ -233,6 +233,12 @@
             <artifactId>bcpkix-jdk15on</artifactId>
             <version>1.60</version>
         </dependency>
+        <dependency>
+            <groupId>ca.bc.gov.open</groupId>
+            <artifactId>spring-sftp-starter</artifactId>
+            <version>0.2.2</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 
     <build>

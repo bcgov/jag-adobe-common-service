@@ -6,14 +6,14 @@ import ca.bc.gov.open.adobe.scp.PDFTransformations;
 import ca.bc.gov.open.adobe.scp.PDFTransformations2;
 import ca.bc.gov.open.adobe.scp.PDFTransformationsResponse;
 import ca.bc.gov.open.adobe.scp.PDFTransformationsResponse2;
+import ca.bc.gov.open.sftp.starter.JschSessionProvider;
+import ca.bc.gov.open.sftp.starter.SftpProperties;
+import ca.bc.gov.open.sftp.starter.SftpServiceImpl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.JSch;
-import com.jcraft.jsch.JSchException;
-import com.jcraft.jsch.Session;
 import java.io.File;
-import java.net.InetAddress;
+import java.io.FileInputStream;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
@@ -31,20 +31,10 @@ import org.springframework.ws.soap.server.endpoint.annotation.SoapAction;
 @Slf4j
 public class PDFTransformSCPController {
 
-    @Value("${adobe.ssh.username}")
-    private String sfegUserName = "";
-
-    @Value("${adobe.ssh.host}")
-    private String sfegHost = "";
-
-    @Value("${adobe.ssh.nfs-dir}")
-    private String nfsDir = "";
-
-    @Value("${adobe.ssh.grp-id}")
-    private String grpId = "";
-
     @Value("${adobe.lifecycle-host}")
     private String host = "https://127.0.0.1/";
+
+    private final SftpProperties sftpProperties;
 
     private static final String SOAP_NAMESPACE =
             "http://brooks/AdobeCommonServices.Source.CommonServices.ws.provider:PDFTransformationsSCPWS";
@@ -53,7 +43,6 @@ public class PDFTransformSCPController {
 
     private final WebServiceTemplate webServiceTemplate;
     private final String tempFileDir = "temp-pdfs/";
-    private JSch jsch = null;
 
     private final ModelMapper mapper;
 
@@ -61,11 +50,12 @@ public class PDFTransformSCPController {
     public PDFTransformSCPController(
             ObjectMapper objectMapper,
             @Qualifier("transformWS") WebServiceTemplate webServiceTemplate,
-            ModelMapper mapper) {
+            ModelMapper mapper,
+            SftpProperties sftpProperties) {
         this.mapper = mapper;
         this.objectMapper = objectMapper;
         this.webServiceTemplate = webServiceTemplate;
-        jsch = new JSch();
+        this.sftpProperties = sftpProperties;
     }
 
     @SoapAction(
@@ -80,6 +70,7 @@ public class PDFTransformSCPController {
     public PDFTransformationsResponse2 transformPDFScp(@RequestPayload PDFTransformations2 request)
             throws JsonProcessingException {
         File f = null;
+        var out = new PDFTransformationsResponse2();
         try {
             // Post File to LCG and convert from base64 encode then write to a file
             var gatewayResp =
@@ -92,18 +83,6 @@ public class PDFTransformSCPController {
 
             f = new File(tempFileDir + "TmpPDF" + UUID.randomUUID() + ".pdf");
             FileUtils.writeByteArrayToFile(f, gatewayResp.getPDFTransformationsReturn());
-
-            // SCP the file to a server
-            sftpTransfer(request.getRemotefile(), f);
-
-            // Return the good response
-            log.info(
-                    objectMapper.writeValueAsString(
-                            new RequestSuccessLog("Request Success", "transformPDFScp")));
-            var out = new PDFTransformationsResponse2();
-            out.setStatusVal(1);
-            out.setStatusMsg("ok");
-            return out;
         } catch (Exception ex) {
             log.error(
                     objectMapper.writeValueAsString(
@@ -112,7 +91,28 @@ public class PDFTransformSCPController {
                                     "transformPDFScp",
                                     ex.getMessage(),
                                     request)));
-            var out = new PDFTransformationsResponse2();
+            out.setStatusVal(0);
+            out.setStatusMsg(ex.getMessage());
+            return out;
+        }
+
+        try {
+            // SCP the file to a server
+            sftpTransfer(request.getRemotefile(), f);
+            log.info(
+                    objectMapper.writeValueAsString(
+                            new RequestSuccessLog("Request Success", "transformPDFScp")));
+            out.setStatusMsg("ok");
+            out.setStatusVal(1);
+            return out;
+        } catch (Exception ex) {
+            log.error(
+                    objectMapper.writeValueAsString(
+                            new OrdsErrorLog(
+                                    "Failure of SFTP to " + sftpProperties.getHost(),
+                                    "transformPDFScp",
+                                    ex.getMessage(),
+                                    request)));
             out.setStatusVal(0);
             out.setStatusMsg(ex.getMessage());
             return out;
@@ -137,6 +137,7 @@ public class PDFTransformSCPController {
     public PDFTransformationsResponse pdfTransformSCPByReference(
             @RequestPayload PDFTransformations request) throws JsonProcessingException {
         File f = null;
+        var out = new PDFTransformationsResponse();
         try {
             var gatewayResp =
                     (ca.bc.gov.open.adobe.gateway.PDFTransformationsByReferenceResponse)
@@ -149,14 +150,26 @@ public class PDFTransformSCPController {
 
             f = new File(tempFileDir + "TmpPDF" + UUID.randomUUID() + ".pdf");
             FileUtils.writeByteArrayToFile(f, gatewayResp.getPDFTransformationsByReferenceReturn());
+        } catch (Exception ex) {
+            log.error(
+                    objectMapper.writeValueAsString(
+                            new OrdsErrorLog(
+                                    "Failed to SFTP",
+                                    "pdfTransformSCPByReference",
+                                    ex.getMessage(),
+                                    request)));
+            out.setStatusVal(0);
+            out.setStatusMsg(ex.getMessage());
+            return out;
+        }
 
+        try {
             // SCP the file to a server
             sftpTransfer(request.getRemotefile(), f);
             log.info(
                     objectMapper.writeValueAsString(
                             new RequestSuccessLog(
                                     "Request Success", "pdfTransformSCPByReference")));
-            var out = new PDFTransformationsResponse();
             out.setStatusMsg("ok");
             out.setStatusVal(1);
             return out;
@@ -164,11 +177,10 @@ public class PDFTransformSCPController {
             log.error(
                     objectMapper.writeValueAsString(
                             new OrdsErrorLog(
-                                    "Failed to send message to adobe LCG",
+                                    "Failure of SFTP to " + sftpProperties.getHost(),
                                     "pdfTransformSCPByReference",
                                     ex.getMessage(),
                                     request)));
-            var out = new PDFTransformationsResponse();
             out.setStatusVal(0);
             out.setStatusMsg(ex.getMessage());
             return out;
@@ -181,51 +193,15 @@ public class PDFTransformSCPController {
         }
     }
 
-    public void sftpTransfer(String dest, File payload) throws JSchException {
-        Session jschSession = null;
-        ChannelSftp channelSftp = null;
-        //        dest = nfsDir + dest.substring(dest.indexOf("objstr_zd/") +
-        // "objstr_zd/".length());
-        jsch.setKnownHosts(".ssh/known_hosts");
-        try {
-            InetAddress address = InetAddress.getByName(sfegHost);
-            jsch.addIdentity(".ssh/id_rsa");
-            jschSession = jsch.getSession(sfegUserName, address.getHostAddress());
-            jschSession.setConfig("StrictHostKeyChecking", "no");
-            jschSession.connect();
-            channelSftp = (ChannelSftp) jschSession.openChannel("sftp");
-            channelSftp.connect();
-        } catch (Exception ex) {
-            log.error("Failed to connect to SFEG host: " + sfegHost);
-            throw new JSchException(ex.getMessage());
-        }
+    public void sftpTransfer(String dest, File payload) {
+        JschSessionProvider jschSessionProvider =
+                new JschSessionProvider(new JSch(), sftpProperties);
 
+        SftpServiceImpl sftpService = new SftpServiceImpl(jschSessionProvider, sftpProperties);
         try {
-            log.info(
-                    "grpId:"
-                            + Integer.valueOf(grpId)
-                            + " src:"
-                            + payload.getAbsoluteFile().getPath()
-                            + " dest:"
-                            + dest);
-            channelSftp.chgrp(Integer.valueOf(grpId), "/data/mkdir_test");
-            channelSftp.mkdir("/data/mkdir_test");
-
-            channelSftp.chgrp(Integer.valueOf(grpId), dest);
-            channelSftp.put(payload.getAbsoluteFile().getPath(), dest);
+            sftpService.put(new FileInputStream(payload), dest);
         } catch (Exception ex) {
-            log.error(
-                    "Failed to transfer file to remote: "
-                            + sfegUserName
-                            + "@"
-                            + sfegHost
-                            + ":"
-                            + dest);
-            throw new JSchException(ex.getMessage());
-        } finally {
-            channelSftp.exit();
-            channelSftp.disconnect();
-            jschSession.disconnect();
+            log.error(ex.getMessage());
         }
     }
 }
