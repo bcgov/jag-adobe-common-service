@@ -42,6 +42,8 @@ before they can be pushed to.
 
 NFS_DIR: SFEG target directory for NFS transfer
 
+SFTP_PRIVATE_KEY: Path to private key file
+
 GROUP_ID: Group ID for access NFS directory
 
 ### Building the Application
@@ -91,6 +93,7 @@ GROUP_ID
 
 NFS_DIR
 
+SFTP_PRIVATE_KEY
 
 4) Create POM goals: clean install, spring-boot:run  (when running locally).
 
@@ -101,3 +104,7 @@ NFS_DIR
 ### JaCoCo Coverage Report
 1) Run ```mvn clean verify```
 2) Open ```adobe-code-coverage/target/site/jacoco-aggregate/index.html``` in a browser
+
+### Note
+1) spring-starters-bom and spring-sftp-starter are libs branched from ```https://github.com/bcgov/spring-boot-starters```
+2) id_rsa_pseudo is merely a pseudo key, used to pass unit test in maven package for git pipeline
