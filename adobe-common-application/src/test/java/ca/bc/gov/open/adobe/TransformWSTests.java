@@ -7,17 +7,18 @@ import ca.bc.gov.open.adobe.exceptions.AdobeLCGException;
 import ca.bc.gov.open.adobe.ws.PDFTransformations;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jcraft.jsch.JSchException;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
+import org.mockito.MockitoAnnotations;
 import org.springframework.ws.client.core.WebServiceTemplate;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles("test")
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class TransformWSTests {
 
     @InjectMocks private ObjectMapper objectMapper;
@@ -25,6 +26,11 @@ public class TransformWSTests {
     @Mock private WebServiceTemplate webServiceTemplate;
 
     @Mock private PDFTransformWSController controller;
+
+    @BeforeEach
+    public void setUp() throws JSchException {
+        MockitoAnnotations.openMocks(this);
+    }
 
     @Test
     public void transformPDFWSSuccessTest() throws JsonProcessingException {

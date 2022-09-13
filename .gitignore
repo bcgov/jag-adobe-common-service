@@ -42,6 +42,6 @@ cc-test-reporter
 /comparison-tool/results/*.txt
 /temp-pdfs
 
-/.ssh/id_rsa
+/.ssh/*
 /AdobeCommonServicePDFDiagnosticsWS-soapui-project.xml
 /AdobeCSpdfTransformationWS-soapui-project.xml
