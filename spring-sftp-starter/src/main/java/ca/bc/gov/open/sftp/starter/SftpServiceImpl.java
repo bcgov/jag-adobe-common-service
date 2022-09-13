@@ -120,6 +120,17 @@ public class SftpServiceImpl implements SftpService {
                 });
     }
 
+    @Override
+    public void put(InputStream inputFile, String remoteFileName) {
+        String sftpRemoteFilename = getFilePath(remoteFileName);
+
+        executeSftpFunction(
+                channelSftp -> {
+                    channelSftp.put(inputFile, sftpRemoteFilename);
+                    logger.debug("Successfully uploaded file [{}]", remoteFileName);
+                });
+    }
+
     /**
      * Returns a list of file
      *
