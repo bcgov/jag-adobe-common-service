@@ -78,7 +78,6 @@ public class PDFDiagnosticController {
             log.info(
                     objectMapper.writeValueAsString(
                             new RequestSuccessLog("Request Success", "PDFDiagnosticsByReference")));
-            resp.setPDFDiagnosticsByReferenceReturn(1);
             return resp;
         } catch (Exception ex) {
             log.error(
