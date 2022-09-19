@@ -40,8 +40,6 @@ NFS_DIR: SFEG target directory for NFS transfer
 
 SFTP_PRIVATE_KEY: Path to private key file
 
-GROUP_ID: Group ID for access NFS directory
-
 ### Building the Application
 1) Set intellij to use java 11 for the project modals and sdk
 2) Run ``mvn compile``
@@ -84,8 +82,6 @@ SPLUNK_HTTP_URL
 SPLUNK_TOKEN
 
 SPLUNK_INDEX
-
-GROUP_ID
 
 NFS_DIR
 
