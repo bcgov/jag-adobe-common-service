@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.ConnectException;
 import java.nio.charset.StandardCharsets;
 import javax.servlet.http.HttpServlet;
 import lombok.extern.slf4j.Slf4j;
@@ -58,20 +59,22 @@ public class TransformationServletController extends HttpServlet {
                             HttpMethod.GET,
                             new HttpEntity<>(new HttpHeaders()),
                             byte[].class);
-            HttpStatus status = resp.getStatusCode();
-        } catch (HttpClientErrorException | HttpServerErrorException ex) {
-            String errMsg =
-                    "File defined for URL parameter not found (HTTP Status "
-                            + ex.getStatusCode()
-                            + " returned from server).";
-            log.error(objectMapper.writeValueAsString(new ServletErrorLog(errMsg, servletRequest)));
-            throw new ServiceException(errMsg);
         } catch (Exception ex) {
             log.error(
                     objectMapper.writeValueAsString(
                             new ServletErrorLog(ex.getMessage(), servletRequest)));
             throw new ServiceException(ex.getMessage());
         }
+
+        if (resp.getStatusCode().equals(HttpStatus.NOT_FOUND)) {
+            String errMsg =
+                    "File defined for URL parameter not found (HTTP Status "
+                            + resp.getStatusCode()
+                            + " returned from server).";
+            log.error(objectMapper.writeValueAsString(new ServletErrorLog(errMsg, servletRequest)));
+            throw new ServiceException(errMsg);
+        }
+
 
         String version = getPDFVersion(resp.getBody());
 
