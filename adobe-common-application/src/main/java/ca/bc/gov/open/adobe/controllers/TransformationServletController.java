@@ -1,31 +1,29 @@
 package ca.bc.gov.open.adobe.controllers;
 
 import ca.bc.gov.open.adobe.exceptions.ServiceException;
+import ca.bc.gov.open.adobe.models.RequestSuccessLog;
 import ca.bc.gov.open.adobe.models.ServletErrorLog;
 import ca.bc.gov.open.adobe.models.TransformationServletRequest;
 import ca.bc.gov.open.adobe.ws.PDFTransformationsResponse;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.ConnectException;
-import java.nio.charset.StandardCharsets;
+import java.io.OutputStream;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.util.Base64Utils;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
 @Slf4j
 @RestController
-@RequestMapping("/")
+@WebServlet("/")
 public class TransformationServletController extends HttpServlet {
 
     private final RestTemplate restTemplate;
@@ -42,8 +40,9 @@ public class TransformationServletController extends HttpServlet {
     }
 
     @GetMapping(value = "transformationServlet", produces = MediaType.TEXT_XML_VALUE)
-    public byte[] transformService(TransformationServletRequest servletRequest)
-            throws JsonProcessingException {
+    public void transformService(
+            TransformationServletRequest servletRequest, HttpServletResponse response)
+            throws IOException {
         if (!isValidOptions(servletRequest.getOptions())) {
             String errMsg =
                     "Transformation options must be a summation of allowable values: 1, 2, 4, 8, 32 or 64.";
@@ -75,20 +74,28 @@ public class TransformationServletController extends HttpServlet {
             throw new ServiceException(errMsg);
         }
 
-
         String version = getPDFVersion(resp.getBody());
-
+        // setting content type
+        response.setContentType("application/pdf");
         if (version.equals("1.4")
                 || version.equals("1.3")
                 || version.equals("1.2")
                 || version.equals("1.1")
                 || version.equals("1.0")
                 || version.equals("0.0")) {
-            return resp.getBody();
+            OutputStream os = response.getOutputStream();
+            response.setContentLength(resp.getBody().length);
+            os.write(resp.getBody());
+            os.flush();
+            os.close();
+            log.info(
+                    objectMapper.writeValueAsString(
+                            new RequestSuccessLog(
+                                    "Request Success",
+                                    "transformationServlet (Version less than PDF 1.5)")));
         }
 
-        String bs64 = resp.getBody() != null ? Base64Utils.encodeToString(resp.getBody()) : "";
-
+        String bs64 = Base64Utils.encodeToString(resp.getBody());
         ca.bc.gov.open.adobe.gateway.PDFTransformations request =
                 new ca.bc.gov.open.adobe.gateway.PDFTransformations();
         request.setFlags(Integer.valueOf(servletRequest.getOptions()));
@@ -103,11 +110,19 @@ public class TransformationServletController extends HttpServlet {
                                     pdfTransformationsResponse.getStatusMsg(), servletRequest)));
             throw new ServiceException(pdfTransformationsResponse.getStatusMsg());
         }
-        return pdfTransformationsResponse.getOutputFile().getBytes(StandardCharsets.UTF_8);
+        response.setContentLength(
+                Base64Utils.decodeFromString(pdfTransformationsResponse.getOutputFile()).length);
+        OutputStream os = response.getOutputStream();
+        os.write(Base64Utils.decodeFromString(pdfTransformationsResponse.getOutputFile()));
+        os.flush();
+        os.close();
+        log.info(
+                objectMapper.writeValueAsString(
+                        new RequestSuccessLog("Request Success", "transformationServlet")));
     }
 
-    // options 		: Input string sum of binary options.
-    // return		: Either boolean true or false if options are valid.
+    // options : Input string sum of binary options.
+    // return  : Either boolean true or false if options are valid.
     public static final boolean isValidOptions(String options) throws ServiceException {
         //  For example
         // ----------------
