@@ -1,6 +1,7 @@
 package ca.bc.gov.open.adobe.controllers;
 
 import ca.bc.gov.open.adobe.exceptions.ServiceException;
+import ca.bc.gov.open.adobe.models.OrdsErrorLog;
 import ca.bc.gov.open.adobe.models.RequestSuccessLog;
 import ca.bc.gov.open.adobe.models.ServletErrorLog;
 import ca.bc.gov.open.adobe.models.TransformationServletRequest;
@@ -15,11 +16,14 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.util.Base64Utils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.ws.client.core.WebServiceTemplate;
 
 @Slf4j
 @RestController
@@ -29,14 +33,23 @@ public class TransformationServletController extends HttpServlet {
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
 
+    private final WebServiceTemplate webServiceTemplate;
+
     private static Integer MAX_OPTIONS = 111;
+
+    @Value("${adobe.lifecycle-host}")
+    private String host = "https://127.0.0.1/";
 
     @Autowired PDFTransformWSController pdfTransformWSController;
 
     @Autowired
-    public TransformationServletController(RestTemplate restTemplate, ObjectMapper objectMapper) {
+    public TransformationServletController(
+            RestTemplate restTemplate,
+            ObjectMapper objectMapper,
+            @Qualifier("transformWS") WebServiceTemplate webServiceTemplate) {
         this.restTemplate = restTemplate;
         this.objectMapper = objectMapper;
+        this.webServiceTemplate = webServiceTemplate;
     }
 
     @GetMapping(value = "transformationServlet", produces = MediaType.TEXT_XML_VALUE)
@@ -50,6 +63,7 @@ public class TransformationServletController extends HttpServlet {
             throw new ServiceException(errMsg);
         }
 
+        // Fetch file
         ResponseEntity<byte[]> resp = null;
         try {
             resp =
@@ -75,7 +89,7 @@ public class TransformationServletController extends HttpServlet {
         }
 
         String version = getPDFVersion(resp.getBody());
-        // setting content type
+        // Setting content type
         response.setContentType("application/pdf");
         if (version.equals("1.4")
                 || version.equals("1.3")
@@ -100,20 +114,40 @@ public class TransformationServletController extends HttpServlet {
                 new ca.bc.gov.open.adobe.gateway.PDFTransformations();
         request.setFlags(Integer.valueOf(servletRequest.getOptions()));
         request.setInputFile(bs64);
-        PDFTransformationsResponse pdfTransformationsResponse =
-                pdfTransformWSController.transformPDFWS(request);
-
-        if (pdfTransformationsResponse.getStatusVal().equals("0")) {
+        // For efficiency concern,
+        // PDFTransformWSController.transformPDFWS call is replace with as such:
+        PDFTransformationsResponse out = new PDFTransformationsResponse();
+        ca.bc.gov.open.adobe.gateway.PDFTransformationsResponse pdfTransformationsResponse = null;
+        try {
+            pdfTransformationsResponse =
+                    (ca.bc.gov.open.adobe.gateway.PDFTransformationsResponse)
+                            webServiceTemplate.marshalSendAndReceive(host, request);
+            out.setStatusVal(1);
+            log.info(
+                    objectMapper.writeValueAsString(
+                            new RequestSuccessLog("Request Success", "PDFTransformations")));
+        } catch (Exception ex) {
             log.error(
                     objectMapper.writeValueAsString(
-                            new ServletErrorLog(
-                                    pdfTransformationsResponse.getStatusMsg(), servletRequest)));
-            throw new ServiceException(pdfTransformationsResponse.getStatusMsg());
+                            new OrdsErrorLog(
+                                    "Failed to send message to adobe LCG",
+                                    "PDFTransformations",
+                                    ex.getMessage(),
+                                    request)));
+            out.setStatusVal(0);
+            out.setStatusMsg(ex.getMessage());
         }
-        response.setContentLength(
-                Base64Utils.decodeFromString(pdfTransformationsResponse.getOutputFile()).length);
+
+        // Watch for LCG error
+        if (out.getStatusVal().equals("0")) {
+            log.error(
+                    objectMapper.writeValueAsString(
+                            new ServletErrorLog(out.getStatusMsg(), servletRequest)));
+            throw new ServiceException(out.getStatusMsg());
+        }
+        response.setContentLength(pdfTransformationsResponse.getPDFTransformationsReturn().length);
         OutputStream os = response.getOutputStream();
-        os.write(Base64Utils.decodeFromString(pdfTransformationsResponse.getOutputFile()));
+        os.write(pdfTransformationsResponse.getPDFTransformationsReturn());
         os.flush();
         os.close();
         log.info(
