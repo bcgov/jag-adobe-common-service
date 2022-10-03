@@ -136,6 +136,7 @@ public class TransformationServletController extends HttpServlet {
                                     request)));
             out.setStatusVal(0);
             out.setStatusMsg(ex.getMessage());
+            return;
         }
 
         // Watch for LCG error
