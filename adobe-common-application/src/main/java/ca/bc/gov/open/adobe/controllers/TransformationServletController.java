@@ -76,7 +76,7 @@ public class TransformationServletController extends HttpServlet {
             log.error(
                     objectMapper.writeValueAsString(
                             new ServletErrorLog(ex.getMessage(), servletRequest)));
-            throw new ServiceException(ex.getMessage());
+            return;
         }
 
         if (resp.getStatusCode().equals(HttpStatus.NOT_FOUND)) {
@@ -85,7 +85,7 @@ public class TransformationServletController extends HttpServlet {
                             + resp.getStatusCode()
                             + " returned from server).";
             log.error(objectMapper.writeValueAsString(new ServletErrorLog(errMsg, servletRequest)));
-            throw new ServiceException(errMsg);
+            return;
         }
 
         String version = getPDFVersion(resp.getBody());
@@ -143,7 +143,7 @@ public class TransformationServletController extends HttpServlet {
             log.error(
                     objectMapper.writeValueAsString(
                             new ServletErrorLog(out.getStatusMsg(), servletRequest)));
-            throw new ServiceException(out.getStatusMsg());
+            return;
         }
         response.setContentLength(pdfTransformationsResponse.getPDFTransformationsReturn().length);
         OutputStream os = response.getOutputStream();
