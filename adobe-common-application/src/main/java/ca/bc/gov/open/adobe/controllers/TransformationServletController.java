@@ -107,6 +107,7 @@ public class TransformationServletController extends HttpServlet {
                             new RequestSuccessLog(
                                     "Request Success",
                                     "transformationServlet (Version less than PDF 1.5)")));
+            return;
         }
 
         String bs64 = Base64Utils.encodeToString(resp.getBody());
