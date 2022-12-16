@@ -1,13 +1,12 @@
 # jag-adobe-common-service
 
-[![Lifecycle:Experimental](https://img.shields.io/badge/Lifecycle-Experimental-339999)](<Redirect-URL>)
+[![Lifecycle:Experimental](https://img.shields.io/badge/Lifecycle-Experimental-339999)](https://github.com/bcgov/jag-adobe-common-service)
 [![Maintainability](https://api.codeclimate.com/v1/badges/a492f352f279a2d1621e/maintainability)](https://codeclimate.com/github/bcgov/jag-adobe-common-service/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/a492f352f279a2d1621e/test_coverage)](https://codeclimate.com/github/bcgov/jag-adobe-common-service/test_coverage)
 
 ### Recommended Tools
 * Intellij
 * Docker
-* Docker Compose
 * Maven
 * Java 11
 * Lombok
@@ -17,6 +16,13 @@
 Local Host: http://127.0.0.1:8080
 
 Code Climate: https://codeclimate.com/github/bcgov/jag-adobe-common-service
+
+WSDL Endpoint Local:
+* localhost:8080/ws/AdobeCommonServices.Source.CommonServices.ws.provider:PDFDiagnosticsWS?WSDL
+
+* localhost:8080/ws/AdobeCommonServices.Source.CommonServices.ws.provider:PDFTransformationsWS?WSDL
+
+* localhost:8080/ws/AdobeCommonServices.Source.CommonServices.ws.provider:PDFTransformationsSCPWS?WSDL
 
 ### Required Environmental Variables
 
@@ -39,6 +45,10 @@ before they can be pushed to.
 NFS_DIR: SFEG target directory for NFS transfer
 
 SFTP_PRIVATE_KEY: Path to private key file
+
+SFTP_KNOWN_HOSTS: Path to known hosts
+
+SFEG_HOST: url of the secure File Transfer Protocol (SFTP)
 
 ### Building the Application
 1) Set intellij to use java 11 for the project modals and sdk
@@ -86,6 +96,10 @@ SPLUNK_INDEX
 NFS_DIR
 
 SFTP_PRIVATE_KEY
+
+SFTP_KNOWN_HOSTS
+
+SFEG_HOST
 
 4) Create POM goals: clean install, spring-boot:run  (when running locally).
 
