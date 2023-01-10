@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" targetNamespace="http://ag.gov.bc.ca" xmlns:tns1="http://exceptions.gateway.ag.gov.bc.ca" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:impl="http://ag.gov.bc.ca" xmlns:apachesoap="http://xml.apache.org/xml-soap" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:intf="http://ag.gov.bc.ca">
+    <wsdl:types>
+        <schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://exceptions.gateway.ag.gov.bc.ca">
+            <import namespace="http://schemas.xmlsoap.org/soap/encoding/"/>
+            <complexType name="LCGatewayException">
+                <sequence/>
+            </complexType>
+        </schema>
+    </wsdl:types>
+    <wsdl:message name="PDFDiagnosticsByReferenceResponse">
+        <wsdl:part name="PDFDiagnosticsByReferenceReturn" type="xsd:int">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="PDFTransformationsResponse">
+        <wsdl:part name="PDFTransformationsReturn" type="xsd:base64Binary">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="PDFDiagnosticsRequest">
+        <wsdl:part name="inputFile" type="xsd:base64Binary">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="LCGatewayException">
+        <wsdl:part name="fault" type="tns1:LCGatewayException">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="PDFDiagnosticsResponse">
+        <wsdl:part name="PDFDiagnosticsReturn" type="xsd:int">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="PDFDiagnosticsByReferenceRequest">
+        <wsdl:part name="inputFileUrl" type="xsd:string">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="PDFTransformationsByReferenceResponse">
+        <wsdl:part name="PDFTransformationsByReferenceReturn" type="xsd:base64Binary">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="PDFTransformationsByReferenceRequest">
+        <wsdl:part name="inputFileUrl" type="xsd:string">
+        </wsdl:part>
+        <wsdl:part name="flags" type="xsd:int">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="PDFTransformationsRequest">
+        <wsdl:part name="inputFile" type="xsd:base64Binary">
+        </wsdl:part>
+        <wsdl:part name="flags" type="xsd:int">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:portType name="LCGatewayServiceImpl">
+        <wsdl:operation name="PDFDiagnosticsByReference" parameterOrder="inputFileUrl">
+            <wsdl:input name="PDFDiagnosticsByReferenceRequest" message="impl:PDFDiagnosticsByReferenceRequest">
+            </wsdl:input>
+            <wsdl:output name="PDFDiagnosticsByReferenceResponse" message="impl:PDFDiagnosticsByReferenceResponse">
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="PDFDiagnostics" parameterOrder="inputFile">
+            <wsdl:input name="PDFDiagnosticsRequest" message="impl:PDFDiagnosticsRequest">
+            </wsdl:input>
+            <wsdl:output name="PDFDiagnosticsResponse" message="impl:PDFDiagnosticsResponse">
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="PDFTransformationsByReference" parameterOrder="inputFileUrl flags">
+            <wsdl:input name="PDFTransformationsByReferenceRequest" message="impl:PDFTransformationsByReferenceRequest">
+            </wsdl:input>
+            <wsdl:output name="PDFTransformationsByReferenceResponse" message="impl:PDFTransformationsByReferenceResponse">
+            </wsdl:output>
+            <wsdl:fault name="LCGatewayException" message="impl:LCGatewayException">
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="PDFTransformations" parameterOrder="inputFile flags">
+            <wsdl:input name="PDFTransformationsRequest" message="impl:PDFTransformationsRequest">
+            </wsdl:input>
+            <wsdl:output name="PDFTransformationsResponse" message="impl:PDFTransformationsResponse">
+            </wsdl:output>
+            <wsdl:fault name="LCGatewayException" message="impl:LCGatewayException">
+            </wsdl:fault>
+        </wsdl:operation>
+    </wsdl:portType>
+    <wsdl:binding name="servicesSoapBinding" type="impl:LCGatewayServiceImpl">
+        <wsdlsoap:binding style="rpc" transport="http://schemas.xmlsoap.org/soap/http"/>
+        <wsdl:operation name="PDFDiagnosticsByReference">
+            <wsdlsoap:operation soapAction=""/>
+            <wsdl:input name="PDFDiagnosticsByReferenceRequest">
+                <wsdlsoap:body use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://ag.gov.bc.ca"/>
+            </wsdl:input>
+            <wsdl:output name="PDFDiagnosticsByReferenceResponse">
+                <wsdlsoap:body use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://ag.gov.bc.ca"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="PDFDiagnostics">
+            <wsdlsoap:operation soapAction=""/>
+            <wsdl:input name="PDFDiagnosticsRequest">
+                <wsdlsoap:body use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://ag.gov.bc.ca"/>
+            </wsdl:input>
+            <wsdl:output name="PDFDiagnosticsResponse">
+                <wsdlsoap:body use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://ag.gov.bc.ca"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="PDFTransformationsByReference">
+            <wsdlsoap:operation soapAction=""/>
+            <wsdl:input name="PDFTransformationsByReferenceRequest">
+                <wsdlsoap:body use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://ag.gov.bc.ca"/>
+            </wsdl:input>
+            <wsdl:output name="PDFTransformationsByReferenceResponse">
+                <wsdlsoap:body use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://ag.gov.bc.ca"/>
+            </wsdl:output>
+            <wsdl:fault name="LCGatewayException">
+                <wsdlsoap:fault name="LCGatewayException" use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://ag.gov.bc.ca"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="PDFTransformations">
+            <wsdlsoap:operation soapAction=""/>
+            <wsdl:input name="PDFTransformationsRequest">
+                <wsdlsoap:body use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://ag.gov.bc.ca"/>
+            </wsdl:input>
+            <wsdl:output name="PDFTransformationsResponse">
+                <wsdlsoap:body use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://ag.gov.bc.ca"/>
+            </wsdl:output>
+            <wsdl:fault name="LCGatewayException">
+                <wsdlsoap:fault name="LCGatewayException" use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://ag.gov.bc.ca"/>
+            </wsdl:fault>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:service name="LCGatewayServiceImplService">
+        <wsdl:port name="services" binding="impl:servicesSoapBinding">
+            <wsdlsoap:address location="http://localhost:8080/LiveCycleGateway/services/LCGatewayService"/>
+        </wsdl:port>
+    </wsdl:service>
+</wsdl:definitions>

@@ -21,4 +21,22 @@
     </xsd:element>
 
 
+    <xsd:element name="PDFTransformationsByReferenceResponse">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="PDFTransformationsByReferenceReturn" type="xsd:base64Binary"/>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="PDFTransformationsByReference">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="inputFileUrl" nillable="true" type="xsd:string"/>
+                <xsd:element name="flags" nillable="true" type="xsd:int"/>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+
+
 </xsd:schema>

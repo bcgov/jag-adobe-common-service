@@ -32,6 +32,8 @@
         <module>adobe-code-coverage</module>
         <module>lifecycle-gateway-models</module>
         <module>AutomatedTests</module>
+        <module>spring-sftp-starter</module>
+        <module>spring-starters-bom</module>
     </modules>
 
     <build>
