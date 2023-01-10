@@ -10,4 +10,4 @@ RUN mkdir temp-pdfs
 RUN chgrp -R 0 temp-pdfs && \
         chmod -R g=u temp-pdfs
 
-ENTRYPOINT ["java","-jar","jag-adobe-application.jar"]
+ENTRYPOINT ["java","-Xmx1g","-jar","jag-adobe-application.jar"]
