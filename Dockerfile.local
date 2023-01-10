@@ -6,4 +6,4 @@ RUN touch ~/.ssh/known_hosts
 RUN chgrp -R 0 ~/.ssh && \
         chmod -R g=u ~/.ssh
 
-ENTRYPOINT ["java","-jar","jag-adobe-application.jar"]
+ENTRYPOINT ["java","-Xmx1g","-jar","jag-adobe-application.jar"]
