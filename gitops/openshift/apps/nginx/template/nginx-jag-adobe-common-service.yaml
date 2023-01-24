@@ -41,11 +41,6 @@ parameters:
   required: false
   value: jag-adobe-common-service
 
-- name: ENDPOINT2
-  description: The target endpoint
-  required: false
-  value: jag-adobe-common-service-oldwm
-
 - name: DNS
   description: The application name that each component is part of
   required: false
