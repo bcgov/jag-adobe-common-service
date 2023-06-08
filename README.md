@@ -50,6 +50,8 @@ SFTP_KNOWN_HOSTS: Path to known hosts
 
 SFEG_HOST: url of the secure File Transfer Protocol (SFTP)
 
+WEBSERVICE_READ_TIMEOUT: Timeout in milliseconds which expects the response/result from Webservice.
+
 ### Building the Application
 1) Set intellij to use java 11 for the project modals and sdk
 2) Run ``mvn compile``
@@ -100,6 +102,8 @@ SFTP_PRIVATE_KEY
 SFTP_KNOWN_HOSTS
 
 SFEG_HOST
+
+LIFECYCLE_HOST
 
 4) Create POM goals: clean install, spring-boot:run  (when running locally).
 
