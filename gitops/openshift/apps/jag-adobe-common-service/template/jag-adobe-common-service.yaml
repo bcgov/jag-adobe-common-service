@@ -130,6 +130,11 @@ objects:
                 secretKeyRef:
                   name: adobe-common-service-application-secrets
                   key: LIFECYCLE_HOST
+            - name: WEBSERVICE_READ_TIMEOUT
+              valueFrom:
+                secretKeyRef:
+                  name: adobe-common-service-application-secrets
+                  key: WEBSERVICE_READ_TIMEOUT
             - name: SFEG_USERNAME
               valueFrom:
                 secretKeyRef:
