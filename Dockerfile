@@ -1,4 +1,4 @@
-eclipse-temurin:11.0.19_7-jre-jammy
+FROM eclipse-temurin:11.0.19_7-jre-jammy
 
 COPY ./adobe-common-application/target/jag-adobe-application.jar jag-adobe-application.jar
 RUN mkdir .ssh
