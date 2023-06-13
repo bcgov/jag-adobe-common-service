@@ -11,6 +11,8 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletResponse;
@@ -21,9 +23,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.util.Base64Utils;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.ws.client.core.WebServiceTemplate;
+import org.springframework.ws.transport.context.TransportContext;
+import org.springframework.ws.transport.context.TransportContextHolder;
+import org.springframework.ws.transport.http.HttpUrlConnection;
 
 @Slf4j
 @RestController
@@ -54,7 +60,9 @@ public class TransformationServletController extends HttpServlet {
 
     @GetMapping(value = "transformationServlet", produces = MediaType.TEXT_XML_VALUE)
     public void transformService(
-            TransformationServletRequest servletRequest, HttpServletResponse response)
+            @RequestHeader(value = "x-correlation-id", required = false) String correlationId,
+            TransformationServletRequest servletRequest,
+            HttpServletResponse response)
             throws IOException {
         if (!isValidOptions(servletRequest.getOptions())) {
             String errMsg =
@@ -65,6 +73,7 @@ public class TransformationServletController extends HttpServlet {
 
         // Fetch file
         ResponseEntity<byte[]> resp = null;
+        LocalDateTime startTime = LocalDateTime.now();
         try {
             resp =
                     restTemplate.exchange(
@@ -107,6 +116,7 @@ public class TransformationServletController extends HttpServlet {
                             new RequestSuccessLog(
                                     "Request Success",
                                     "transformationServlet (Version less than PDF 1.5)")));
+            LogGetDocumentPerformance(startTime, correlationId);
             return;
         }
 
@@ -120,13 +130,25 @@ public class TransformationServletController extends HttpServlet {
         PDFTransformationsResponse out = new PDFTransformationsResponse();
         ca.bc.gov.open.adobe.gateway.PDFTransformationsResponse pdfTransformationsResponse = null;
         try {
+            LocalDateTime transformationStartTime = LocalDateTime.now();
             pdfTransformationsResponse =
                     (ca.bc.gov.open.adobe.gateway.PDFTransformationsResponse)
-                            webServiceTemplate.marshalSendAndReceive(host, request);
+                            webServiceTemplate.marshalSendAndReceive(
+                                    host,
+                                    request,
+                                    webServiceMessage -> {
+                                        TransportContext context =
+                                                TransportContextHolder.getTransportContext();
+                                        HttpUrlConnection connection =
+                                                (HttpUrlConnection) context.getConnection();
+                                        connection.addRequestHeader(
+                                                "x-correlation-id", correlationId);
+                                    });
             out.setStatusVal(1);
             log.info(
                     objectMapper.writeValueAsString(
                             new RequestSuccessLog("Request Success", "PDFTransformations")));
+            LogTransformationPerformance(transformationStartTime, correlationId);
         } catch (Exception ex) {
             log.error(
                     objectMapper.writeValueAsString(
@@ -152,6 +174,7 @@ public class TransformationServletController extends HttpServlet {
         os.write(pdfTransformationsResponse.getPDFTransformationsReturn());
         os.flush();
         os.close();
+        LogGetDocumentPerformance(startTime, correlationId);
         log.info(
                 objectMapper.writeValueAsString(
                         new RequestSuccessLog("Request Success", "transformationServlet")));
@@ -220,6 +243,28 @@ public class TransformationServletController extends HttpServlet {
                 }
                 return retval;
             }
+        }
+    }
+
+    private static void LogTransformationPerformance(LocalDateTime start, String correlationId) {
+        if (correlationId != null) {
+            Duration duration = Duration.between(start, LocalDateTime.now());
+            log.info(
+                    "GetDocument Transformation Performance - Duration:"
+                            + duration.toMillis() / 1000.0
+                            + " CorrelationId:"
+                            + correlationId);
+        }
+    }
+
+    private static void LogGetDocumentPerformance(LocalDateTime start, String correlationId) {
+        if (correlationId != null) {
+            Duration duration = Duration.between(start, LocalDateTime.now());
+            log.info(
+                    "GetDocument Performance - Duration:"
+                            + duration.toMillis() / 1000.0
+                            + " CorrelationId:"
+                            + correlationId);
         }
     }
 }
