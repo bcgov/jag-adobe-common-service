@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.soap.MimeHeaders;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -27,6 +28,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.ws.client.core.WebServiceTemplate;
+import org.springframework.ws.soap.saaj.SaajSoapMessage;
 
 @Slf4j
 @RestController
@@ -130,7 +132,16 @@ public class TransformationServletController extends HttpServlet {
             LocalDateTime transformationStartTime = LocalDateTime.now();
             pdfTransformationsResponse =
                     (ca.bc.gov.open.adobe.gateway.PDFTransformationsResponse)
-                            webServiceTemplate.marshalSendAndReceive(host, request);
+                            webServiceTemplate.marshalSendAndReceive(
+                                    host,
+                                    request,
+                                    webServiceMessage -> {
+                                        SaajSoapMessage soapMessage =
+                                                (SaajSoapMessage) webServiceMessage;
+                                        MimeHeaders mimeHeader =
+                                                soapMessage.getSaajMessage().getMimeHeaders();
+                                        mimeHeader.setHeader("x-correlation-id", correlationId);
+                                    });
             out.setStatusVal(1);
             log.info(
                     objectMapper.writeValueAsString(
