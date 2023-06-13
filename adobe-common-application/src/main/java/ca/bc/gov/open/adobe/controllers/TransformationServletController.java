@@ -245,24 +245,20 @@ public class TransformationServletController extends HttpServlet {
     }
 
     private static void LogTransformationPerformance(LocalDateTime start, String correlationId) {
-        if (correlationId != null) {
-            Duration duration = Duration.between(start, LocalDateTime.now());
-            log.info(
-                    "GetDocument Transformation Performance - Duration:"
-                            + duration.toMillis() / 1000.0
-                            + " CorrelationId:"
-                            + correlationId);
-        }
+        Duration duration = Duration.between(start, LocalDateTime.now());
+        log.info(
+                "GetDocument Transformation Performance - Duration:"
+                        + duration.toMillis() / 1000.0
+                        + " CorrelationId:"
+                        + correlationId);
     }
 
     private static void LogGetDocumentPerformance(LocalDateTime start, String correlationId) {
-        if (correlationId != null) {
-            Duration duration = Duration.between(start, LocalDateTime.now());
-            log.info(
-                    "GetDocument Performance - Duration:"
-                            + duration.toMillis() / 1000.0
-                            + " CorrelationId:"
-                            + correlationId);
-        }
+        Duration duration = Duration.between(start, LocalDateTime.now());
+        log.info(
+                "GetDocument Performance - Duration:"
+                        + duration.toMillis() / 1000.0
+                        + " CorrelationId:"
+                        + correlationId);
     }
 }
