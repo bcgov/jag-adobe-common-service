@@ -27,9 +27,6 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.ws.client.core.WebServiceTemplate;
-import org.springframework.ws.transport.context.TransportContext;
-import org.springframework.ws.transport.context.TransportContextHolder;
-import org.springframework.ws.transport.http.HttpUrlConnection;
 
 @Slf4j
 @RestController
@@ -133,17 +130,7 @@ public class TransformationServletController extends HttpServlet {
             LocalDateTime transformationStartTime = LocalDateTime.now();
             pdfTransformationsResponse =
                     (ca.bc.gov.open.adobe.gateway.PDFTransformationsResponse)
-                            webServiceTemplate.marshalSendAndReceive(
-                                    host,
-                                    request,
-                                    webServiceMessage -> {
-                                        TransportContext context =
-                                                TransportContextHolder.getTransportContext();
-                                        HttpUrlConnection connection =
-                                                (HttpUrlConnection) context.getConnection();
-                                        connection.addRequestHeader(
-                                                "x-correlation-id", correlationId);
-                                    });
+                            webServiceTemplate.marshalSendAndReceive(host, request);
             out.setStatusVal(1);
             log.info(
                     objectMapper.writeValueAsString(
