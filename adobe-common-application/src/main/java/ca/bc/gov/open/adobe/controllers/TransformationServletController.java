@@ -7,9 +7,10 @@ import ca.bc.gov.open.adobe.models.ServletErrorLog;
 import ca.bc.gov.open.adobe.models.TransformationServletRequest;
 import ca.bc.gov.open.adobe.ws.PDFTransformationsResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.ByteArrayInputStream;
+import com.itextpdf.text.pdf.AcroFields;
+import com.itextpdf.text.pdf.PdfReader;
+import com.itextpdf.text.pdf.XfaForm;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -96,15 +97,17 @@ public class TransformationServletController extends HttpServlet {
             return;
         }
 
-        String version = getPDFVersion(resp.getBody());
+        // ignore the presence of an owner password. It will only throw an exception if a user
+        // password is in place
+        PdfReader.unethicalreading = true;
+        PdfReader reader = new PdfReader(resp.getBody());
+        AcroFields form = reader.getAcroFields();
+        XfaForm xfa = form.getXfa();
+        reader.close();
+
         // Setting content type
         response.setContentType("application/pdf");
-        if (version.equals("1.4")
-                || version.equals("1.3")
-                || version.equals("1.2")
-                || version.equals("1.1")
-                || version.equals("1.0")
-                || version.equals("0.0")) {
+        if (!xfa.isXfaPresent()) {
             OutputStream os = response.getOutputStream();
             response.setContentLength(resp.getBody().length);
             os.write(resp.getBody());
@@ -114,7 +117,7 @@ public class TransformationServletController extends HttpServlet {
                     objectMapper.writeValueAsString(
                             new RequestSuccessLog(
                                     "Request Success",
-                                    "transformationServlet (Version less than PDF 1.5)")));
+                                    "transformationServlet (this PDF has been flattened)")));
             LogGetDocumentPerformance(startTime, correlationId);
             return;
         }
@@ -205,42 +208,6 @@ public class TransformationServletController extends HttpServlet {
             return false;
         } else {
             return true;
-        }
-    }
-
-    public static final String getPDFVersion(byte[] fileBytes) throws ServiceException {
-        int MIN_LENGTH = 10;
-        int VERSION_BUFFER = 4;
-
-        if (null == fileBytes || fileBytes.length <= MIN_LENGTH) {
-            return "0.0";
-        } else {
-            String retval = "0.0";
-            byte[] b = new byte[(int) MIN_LENGTH];
-            InputStream is = new ByteArrayInputStream(fileBytes);
-            try {
-                is.read(b);
-
-                // starts with %PDF. If this is not found, all bets are off.
-                if (b[0] == 0x25 && b[1] == 0x50 && b[2] == 0x44 && b[3] == 0x46) {
-                    // Get version - this has to return a string as we don't know
-                    // how Adobe will deal with later versions of PDF greater than 1.9
-                    // They may use 2.0 or 1.10. 1.10 converts to double 1.1 which is not
-                    // the correct version.
-                    byte[] buff = new byte[VERSION_BUFFER];
-                    System.arraycopy(b, 5, buff, 0, 4);
-                    retval = new String(buff).trim(); // 0x10 may trail value. trim it.
-                }
-            } catch (IOException ie) {
-                // do nothing.
-            } finally {
-                try {
-                    is.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                return retval;
-            }
         }
     }
 
