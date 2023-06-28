@@ -117,7 +117,7 @@ public class TransformationServletController extends HttpServlet {
                     objectMapper.writeValueAsString(
                             new RequestSuccessLog(
                                     "Request Success",
-                                    "transformationServlet (this PDF has been flattened)")));
+                                    "transformationServlet (Not need to be flattened on LiveCycleGateway)")));
             LogGetDocumentPerformance(startTime, correlationId);
             return;
         }
