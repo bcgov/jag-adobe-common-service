@@ -53,8 +53,7 @@ jobs:
         with:
           scan-type: image
           image-ref: jag-adobe-common-service:${{ github.sha }}
-          format: template
-          template: '@/contrib/sarif.tpl'
+          format: sarif
           output: trivy-results.sarif
           exit-code: 1
           ignore-unfixed: true
@@ -62,7 +61,7 @@ jobs:
 
       #Upload results to the Github security tab.
       - name: Upload Trivy scan results to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@v1
+        uses: github/codeql-action/upload-sarif@v2
         if: always()
         with:
           sarif_file: trivy-results.sarif
