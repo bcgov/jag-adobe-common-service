@@ -97,17 +97,19 @@ public class TransformationServletController extends HttpServlet {
             return;
         }
 
+        PdfReader reader = null;
         XfaForm xfa = null;
         try {
             // ignore the presence of an owner password. It will only throw an exception if a user
             // password is in place
-            PdfReader reader;
             PdfReader.unethicalreading = true;
             reader = new PdfReader(resp.getBody());
             AcroFields form = reader.getAcroFields();
             xfa = form.getXfa();
             reader.close();
         } catch (Exception ie) {
+
+            if (reader != null) reader.close();
 
             OutputStream os = response.getOutputStream();
             response.setContentLength(resp.getBody().length);
