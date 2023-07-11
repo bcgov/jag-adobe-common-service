@@ -97,17 +97,35 @@ public class TransformationServletController extends HttpServlet {
             return;
         }
 
-        // ignore the presence of an owner password. It will only throw an exception if a user
-        // password is in place
-        PdfReader.unethicalreading = true;
-        PdfReader reader = new PdfReader(resp.getBody());
-        AcroFields form = reader.getAcroFields();
-        XfaForm xfa = form.getXfa();
-        reader.close();
+        XfaForm xfa = null;
+        try {
+            // ignore the presence of an owner password. It will only throw an exception if a user
+            // password is in place
+            PdfReader reader;
+            PdfReader.unethicalreading = true;
+            reader = new PdfReader(resp.getBody());
+            AcroFields form = reader.getAcroFields();
+            xfa = form.getXfa();
+            reader.close();
+        } catch (Exception ie) {
+
+            OutputStream os = response.getOutputStream();
+            response.setContentLength(resp.getBody().length);
+            os.write(resp.getBody());
+            os.flush();
+            os.close();
+            log.info(
+                    objectMapper.writeValueAsString(
+                            new RequestSuccessLog(
+                                    "Request Success",
+                                    "transformationServlet (Not a PDF file or exception when reading a file)")));
+            LogGetDocumentPerformance(startTime, correlationId);
+            return;
+        }
 
         // Setting content type
         response.setContentType("application/pdf");
-        if (!xfa.isXfaPresent()) {
+        if (xfa == null || !xfa.isXfaPresent()) {
             OutputStream os = response.getOutputStream();
             response.setContentLength(resp.getBody().length);
             os.write(resp.getBody());
