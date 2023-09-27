@@ -11,7 +11,11 @@ import ca.bc.gov.open.sftp.starter.SftpProperties;
 import ca.bc.gov.open.sftp.starter.SftpServiceImpl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
@@ -195,6 +199,7 @@ public class PDFTransformSCPController {
 
     public void sftpTransfer(String dest, File payload) {
         SftpServiceImpl sftpService = new SftpServiceImpl(jschSessionProvider, sftpProperties);
-        sftpService.put(payload.getAbsoluteFile().getPath(), dest);
+        InputStream src = new ByteArrayInputStream(payload.getAbsoluteFile().getPath().getBytes(StandardCharsets.UTF_8));
+        sftpService.put(src, dest);
     }
 }
