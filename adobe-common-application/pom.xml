@@ -236,7 +236,6 @@
             <groupId>ca.bc.gov.open</groupId>
             <artifactId>spring-sftp-starter</artifactId>
             <version>1.0.0</version>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
