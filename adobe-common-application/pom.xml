@@ -88,14 +88,13 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-logging</artifactId>
-            <version>2.6.2</version>
+            <version>2.7.15</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
             <artifactId>jackson-datatype-jsr310</artifactId>
             <version>2.13.1</version>
         </dependency>
-
 
         <!-- Splunk logging -->
         <dependency>
@@ -108,12 +107,12 @@
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>1.2.10</version>
+            <version>1.4.11</version>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-core</artifactId>
-            <version>1.2.10</version>
+            <version>1.4.11</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -236,8 +235,7 @@
         <dependency>
             <groupId>ca.bc.gov.open</groupId>
             <artifactId>spring-sftp-starter</artifactId>
-            <version>0.2.2</version>
-            <scope>compile</scope>
+            <version>1.0.0</version>
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
@@ -248,6 +246,11 @@
             <groupId>com.itextpdf</groupId>
             <artifactId>itextpdf</artifactId>
             <version>5.5.13.3</version>
+        </dependency>
+        <dependency>
+            <groupId>com.squareup.okio</groupId>
+            <artifactId>okio</artifactId>
+            <version>3.5.0</version>
         </dependency>
     </dependencies>
 
@@ -289,13 +292,6 @@
                             </indent>
                         </format>
                     </formats>
-                    <!-- define a language-specific format -->
-                    <java>
-                        <googleJavaFormat>
-                            <version>1.8</version>
-                            <style>AOSP</style>
-                        </googleJavaFormat>
-                    </java>
                 </configuration>
             </plugin>
             <plugin>
