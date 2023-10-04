@@ -204,7 +204,7 @@ public class PDFTransformSCPController {
         }
 
         SftpServiceImpl sftpService = new SftpServiceImpl(jschSessionProvider, sftpProperties);
-        InputStream src = new ByteArrayInputStream(payload.getAbsoluteFile().getPath().getBytes(StandardCharsets.UTF_8));
+        InputStream src = new ByteArrayInputStream(payload.getAbsoluteFile().getPath().getBytes());
         sftpService.put(src, sftpRemoteFilename);
     }
 }
