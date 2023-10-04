@@ -198,8 +198,13 @@ public class PDFTransformSCPController {
     }
 
     public void sftpTransfer(String dest, File payload) {
+        String sftpRemoteFilename = dest;
+        if (dest.contains("objstr_zd/")) {
+            sftpRemoteFilename = dest.substring(dest.indexOf("objstr_zd/") + "objstr_zd/".length());
+        }
+
         SftpServiceImpl sftpService = new SftpServiceImpl(jschSessionProvider, sftpProperties);
-        InputStream src = new ByteArrayInputStream(payload.getAbsoluteFile().getPath().getBytes(StandardCharsets.UTF_8));
-        sftpService.put(src, dest);
+        InputStream src = new ByteArrayInputStream(payload.getAbsoluteFile().getPath().getBytes());
+        sftpService.put(src, sftpRemoteFilename);
     }
 }
