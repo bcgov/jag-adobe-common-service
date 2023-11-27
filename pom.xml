@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.7.7</version>
+        <version>3.1.2</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>ca.bc.gov.open</groupId>
@@ -15,8 +15,9 @@
     <name>jag-adobe-common-service</name>
     <description>adobe-common-service Application</description>
     <properties>
-        <java.version>11</java.version>
+        <java.version>17</java.version>
         <log4j2.version>2.17.1</log4j2.version>
+        <snakeyaml.version>2.0</snakeyaml.version>
     </properties>
     <repositories>
         <repository>
@@ -32,8 +33,6 @@
         <module>adobe-code-coverage</module>
         <module>lifecycle-gateway-models</module>
         <module>AutomatedTests</module>
-        <module>spring-sftp-starter</module>
-        <module>spring-starters-bom</module>
     </modules>
 
     <build>
@@ -60,13 +59,6 @@
                             </indent>
                         </format>
                     </formats>
-                    <!-- define a language-specific format -->
-                    <java>
-                        <googleJavaFormat>
-                            <version>1.8</version>
-                            <style>AOSP</style>
-                        </googleJavaFormat>
-                    </java>
                 </configuration>
             </plugin>
             <plugin>

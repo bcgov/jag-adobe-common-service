@@ -5,6 +5,7 @@ security:
 
 adobe:
   lifecycle-host: ${LIFECYCLE_HOST}
+  webserviceReadTimeout: ${WEBSERVICE_READ_TIMEOUT:600000}
 
 bcgov:
   sftp:

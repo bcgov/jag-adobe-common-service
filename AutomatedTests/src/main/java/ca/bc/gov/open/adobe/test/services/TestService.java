@@ -56,7 +56,7 @@ public class TestService {
 
     private File zipAndReturnErrors() throws IOException {
         File dir = new File(".");
-        FileFilter fileFilter = new WildcardFileFilter("*Adobe*-FAILED.txt");
+        FileFilter fileFilter = new WildcardFileFilter("*-FAILED.txt");
         File[] files = dir.listFiles(fileFilter);
         if (files == null || files.length == 0) {
             return null;

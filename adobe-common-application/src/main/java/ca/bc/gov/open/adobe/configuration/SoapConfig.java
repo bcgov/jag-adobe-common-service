@@ -5,9 +5,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import java.util.HashMap;
 import java.util.Map;
-import javax.xml.soap.SOAPMessage;
+import jakarta.xml.soap.SOAPMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -22,6 +23,7 @@ import org.springframework.ws.config.annotation.EnableWs;
 import org.springframework.ws.config.annotation.WsConfigurerAdapter;
 import org.springframework.ws.soap.SoapVersion;
 import org.springframework.ws.soap.saaj.SaajSoapMessageFactory;
+import org.springframework.ws.transport.http.HttpComponentsMessageSender;
 import org.springframework.ws.transport.http.MessageDispatcherServlet;
 import org.springframework.ws.wsdl.wsdl11.SimpleWsdl11Definition;
 import org.springframework.ws.wsdl.wsdl11.Wsdl11Definition;
@@ -30,6 +32,8 @@ import org.springframework.ws.wsdl.wsdl11.Wsdl11Definition;
 @Configuration
 @Slf4j
 public class SoapConfig extends WsConfigurerAdapter {
+    @Value("${adobe.webserviceReadTimeout}")
+    private String webserviceReadTimeout;
 
     @Bean
     public ServletRegistrationBean<MessageDispatcherServlet> messageDispatcherServlet(
@@ -80,6 +84,9 @@ public class SoapConfig extends WsConfigurerAdapter {
         webServiceTemplate.setMarshaller(jaxb2Marshaller);
         webServiceTemplate.setUnmarshaller(jaxb2Marshaller);
         webServiceTemplate.afterPropertiesSet();
+        HttpComponentsMessageSender messageSender = new HttpComponentsMessageSender();
+        messageSender.setReadTimeout(Integer.parseInt(webserviceReadTimeout));
+        webServiceTemplate.setMessageSender(messageSender);
         return webServiceTemplate;
     }
 
@@ -92,6 +99,9 @@ public class SoapConfig extends WsConfigurerAdapter {
         webServiceTemplate.setMarshaller(jaxb2Marshaller);
         webServiceTemplate.setUnmarshaller(jaxb2Marshaller);
         webServiceTemplate.afterPropertiesSet();
+        HttpComponentsMessageSender messageSender = new HttpComponentsMessageSender();
+        messageSender.setReadTimeout(Integer.parseInt(webserviceReadTimeout));
+        webServiceTemplate.setMessageSender(messageSender);
         return webServiceTemplate;
     }
 
