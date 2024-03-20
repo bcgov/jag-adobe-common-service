@@ -177,7 +177,7 @@ public class TransformationServletController extends HttpServlet {
                                     "Failed to send message to adobe LCG",
                                     "PDFTransformations",
                                     ex.getMessage(),
-                                    request)));
+                                    null)));
             out.setStatusVal(0);
             out.setStatusMsg(ex.getMessage());
             return;

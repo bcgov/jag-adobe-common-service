@@ -91,7 +91,7 @@ public class PDFTransformSCPController {
                                     "Failed to send message to adobe LCG",
                                     "transformPDFScp",
                                     ex.getMessage(),
-                                    request)));
+                                    null)));
             out.setStatusVal(0);
             out.setStatusMsg(ex.getMessage());
             return out;
