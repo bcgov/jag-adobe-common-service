@@ -12,10 +12,7 @@ import ca.bc.gov.open.sftp.starter.SftpServiceImpl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
+import java.io.*;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
@@ -197,14 +194,14 @@ public class PDFTransformSCPController {
         }
     }
 
-    public void sftpTransfer(String dest, File payload) {
+    public void sftpTransfer(String dest, File payload) throws FileNotFoundException {
         String sftpRemoteFilename = dest;
         if (dest.contains("objstr_zd/")) {
             sftpRemoteFilename = dest.substring(dest.indexOf("objstr_zd/") + "objstr_zd/".length());
         }
 
         SftpServiceImpl sftpService = new SftpServiceImpl(jschSessionProvider, sftpProperties);
-        InputStream src = new ByteArrayInputStream(payload.getAbsoluteFile().getPath().getBytes());
+        InputStream src = new FileInputStream(payload);
         sftpService.put(src, sftpRemoteFilename);
     }
 }
