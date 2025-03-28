@@ -4,20 +4,14 @@ name: Main - Build Image and Push to Openshift Registry for Dev Deployment
 
 # Controls when the workflow will run
 on:
-  # Allows you to run this workflow manually from the Actions tab
+  push:
+    branches: [main]
   workflow_dispatch:
-    inputs:
-      app:
-        description: 'App Name (jag-adobe-common-service)'    
-        required: true
-        default: jag-adobe-common-service
-      env:
-        type: choice
-        description: Image Target environment
-        options: 
-        - dev
-        required: true
-        default: 'dev'
+
+env:
+  IMAGE_NAME: jag-adobe-common-service
+  WORKING_DIRECTORY: .
+  ENV_TAG: dev
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -25,7 +19,6 @@ jobs:
   build-push-image:
     # The type of runner that the job will run on
     runs-on: ubuntu-20.04
-    environment: ${{ github.event.inputs.env }}
     env:
       BASIC_AUTH_USER: ${{ secrets.BASIC_AUTH_USER }}
       BASIC_AUTH_PASS: ${{ secrets.BASIC_AUTH_PASS }}
@@ -92,55 +85,67 @@ jobs:
       - name: Maven Spotless Check
         run: mvn -ntp spotless:check
       
-      #Login to OpenShift Container Repository
-      - name: Login to OpenShift Container Repository
-        uses: docker/login-action@v2
+      - name: Login to Artifactory
+        uses: docker/login-action@v1
         with:
-          registry: ${{secrets.OPENSHIFT_EXTERNAL_REPOSITORY}}
-          username: ${{secrets.OPENSHIFT_SA_USERNAME}}
-          password: ${{secrets.OPENSHIFT_SA_PASSWORD}}
+          registry: artifacts.developer.gov.bc.ca
+          username: ${{ secrets.ARTIFACTORY_USERNAME }}
+          password: ${{ secrets.ARTIFACTORY_PASSWORD }}
 
-      #Build and push image to OpenShift Image stream
-      - name: Build & Push Image to Openshift Image Stream
-        env:
-          COMPOSE_DOCKER_CLI_BUILD: 1
-          DOCKER_BUILDKIT: 1
-          CONTEXT: .
-          IMAGE: ${{secrets.OPENSHIFT_EXTERNAL_REPOSITORY}}/${{secrets.OPENSHIFT_TOOLS_NAMESPACE}}/jag-adobe-common-service:${{secrets.OPENSHIFT_ENV_TAG}}
+      - name: Build Image
+        working-directory: ${{env.WORKING_DIRECTORY}}
         run: |
-          docker build \
-            --tag ${IMAGE} \
-            ${CONTEXT}
-            docker push ${IMAGE}
+          docker build -t artifacts.developer.gov.bc.ca/d735-adobe-common-service/${{env.IMAGE_NAME}}:${{env.ENV_TAG}} .
       
-      #Login to Openshift using OC SA and Token of respective env. for Pod labelling
-      - name: Authenticate OC Env Specific SA
-        uses: redhat-actions/oc-login@v1
-        env:
-          OPENSHIFT_NAMESPACE: ${{secrets.OPENSHIFT_LICENSE_PLATE}}-${{ github.event.inputs.env }}
-          OPENSHIFT_USER: ${{secrets.OPENSHIFT_SA_Env_DEPLOYER_NAME}}
+      - name: Docker Push to Artifactory
+        run: |
+          docker push artifacts.developer.gov.bc.ca/d735-adobe-common-service/${{env.IMAGE_NAME}}:${{env.ENV_TAG}}
+
+      - name: Checkout ArgoCD Repo
+        id: gitops
+        uses: actions/checkout@v4
         with:
-          openshift_server_url: ${{secrets.OPENSHIFT_SERVER_URL}}
-          openshift_token: ${{secrets.OPENSHIFT_SA_ENV_DEPLOYER_TOKEN}}
-          namespace: ${OPENSHIFT_NAMESPACE}
-        
-        # Labels the deployment config of the application with release version number to spin up the pods labelled in same version
-      - name: Labelling DC to release version
-        env:
-          releaseVersion: ${{ env.releaseVersion }}
-          appName: ${{ github.event.inputs.app }}
-          openshiftEnvNamespace: ${{secrets.OPENSHIFT_LICENSE_PLATE}}-${{ github.event.inputs.env }}
+          repository: bcgov-c/tenant-gitops-735b8b
+          ref: develop
+          token: ${{ secrets.GH_PAT }} # `GH_PAT` is a secret that contains your PAT
+          path: gitops
+
+      - name: Update Helm Values and Commit
+        id: helm
+        if: steps.gitops.outcome == 'success'  # Only run if the previous step (publish) was successful
         run: |
-          oc patch dc ${appName} -n ${openshiftEnvNamespace} --patch '{"spec":{"template":{"metadata":{"labels":{"version":"${{ env.releaseVersion }}.${{ env.gitsha }}"}}}}}'
-      
-      # Wait to DC rollout to get completed before proceeding next stage
-      - name: Wait for DC rollout
-        env:
-          appName: ${{ github.event.inputs.app }}
-          openshiftEnvNamespace: ${{secrets.OPENSHIFT_LICENSE_PLATE}}-${{ github.event.inputs.env }}
-        run: |
-          oc rollout status -n ${openshiftEnvNamespace} dc/${appName} --watch
-      
+          # Clone the GitOps deployment configuration repository
+          # Navigate to the directory containing your Helm values file for the environment develop -> DEV, test -> test and 
+          cd gitops/charts
+
+          # Update the Helm values file with the new image tag and version
+          DATETIME=$(date +'%Y-%m-%d %H:%M:%S')  # Get current date and time
+
+          sed -i "s/acstag: .*/acstag: ${{env.ENV_TAG}} # Image Updated on $DATETIME/" ../deploy/${{env.ENV_TAG}}_values.yaml
+
+          sed -i "s/acsversion: .*/acsversion: ${{ steps.short_sha.outputs.SHORT_SHA }} # Version Updated on $DATETIME/" ../deploy/${{env.ENV_TAG}}_values.yaml
+          
+          # Commit and push the changes
+          git config --global user.email "actions@github.com"
+          git config --global user.name "GitHub Actions"
+          
+          git add .
+          
+          git add ../deploy/dev_values.yaml
+          
+          # Repackage Helm Chart      
+
+          cd adobe-common-service
+
+          helm dependency build
+          
+          cd charts
+
+          git add .
+          
+          git commit -m "Update Dev Adobe Commons image tag"
+          git push origin develop  # Update the branch name as needed
+
       - name: Run Integration Tests
         env:
           TEST_STARTER_URL: ${{secrets.TEST_STARTER_URL}}
