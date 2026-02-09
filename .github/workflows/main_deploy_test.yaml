@@ -1,8 +1,5 @@
-# This is the main workflow that creates a new image and push to Openshift image stream which in turn triggers the deployment
-
 name: Main - Action for TEST Deployment
 
-# Controls when the workflow will run
 on:
   workflow_dispatch:
 
@@ -10,18 +7,14 @@ env:
   IMAGE_NAME: jag-adobe-common-service
   WORKING_DIRECTORY: .
   ENV_TAG: test
+  BRANCH_NAME: test
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
   push-image:
-    # The type of runner that the job will run on
-    runs-on: ubuntu-20.04
-    environment: ${{ github.event.inputs.env }}
+    runs-on: ubuntu-latest
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Login to Artifactory
         uses: docker/login-action@v1
@@ -54,41 +47,36 @@ jobs:
         run: |
           docker push artifacts.developer.gov.bc.ca/d735-adobe-common-service/${{env.IMAGE_NAME}}:${{env.ENV_TAG}}
       
-      - name: Checkout ArgoCD Repo
-        id: gitops
-        uses: actions/checkout@v4
+      - name: Set GitOps SSH Key
+        uses: webfactory/ssh-agent@v0.5.4
         with:
-          repository: bcgov-c/tenant-gitops-735b8b
-          ref: test
-          token: ${{ secrets.GH_PAT }} # `GH_PAT` is a secret that contains your PAT
-          path: gitops
+          ssh-private-key: ${{ secrets.AC_SSH_KEY }}
 
       - name: Update Helm Values and Commit
         id: helm
-        if: steps.gitops.outcome == 'success'  # Only run if the previous step (publish) was successful
         run: |
-          # Clone the GitOps deployment configuration repository
-          # Navigate to the directory containing your Helm values file for the environment develop -> DEV, test -> test and 
-          cd gitops/charts
+
+          # Commit and push the changes
+          git config --global user.email "actions@github.com"
+          git config --global user.name "Adobe Commons GitHub Actions"
+          git clone -b ${{ env.BRANCH_NAME }} --single-branch git@github.com:bcgov-c/tenant-gitops-735b8b.git
+          
+          # Navigate to the directory containing your Helm values file for the environment develop -> DEV, test -> test
+          cd tenant-gitops-735b8b/charts
 
           # Update the Helm values file with the new image tag and version
           DATETIME=$(date +'%Y-%m-%d %H:%M:%S')  # Get current date and time
 
-          sed -i "s/acstag: .*/acstag: ${{env.ENV_TAG}} # Image Updated on $DATETIME/" ../deploy/${{env.ENV_TAG}}_values.yaml
-
-          sed -i "s/acsversion: .*/acsversion: ${{ steps.short_sha.outputs.SHORT_SHA }} # Version Updated on $DATETIME/" ../deploy/${{env.ENV_TAG}}_values.yaml
-          
-          # Commit and push the changes
-          git config --global user.email "actions@github.com"
-          git config --global user.name "GitHub Actions"
+          sed -i "s/acstag: .*/acstag: ${{ env.ENV_TAG }} # Image Updated on $DATETIME/" ../deploy/${{ env.ENV_TAG }}_values.yaml
+          sed -i "s/acsversion: .*/acsversion: ${{ steps.short_sha.outputs.SHORT_SHA }} # Version Updated on $DATETIME/" ../deploy/${{ env.ENV_TAG }}_values.yaml
           
           git add .
           
-          git add ../deploy/${{env.ENV_TAG}}_values.yaml
+          git add ../deploy/${{ env.ENV_TAG }}_values.yaml
           
           # Repackage Helm Chart      
 
-          cd adobe-common-service
+          cd gitops
 
           helm dependency build
           
@@ -96,5 +84,5 @@ jobs:
 
           git add .
           
-          git commit -m "Update TEST Adobe Commons image tag"
-          git push origin test  # Update the branch name as needed
+          git commit -m "Update Adobe Commons image tag"
+          git push origin ${{ env.BRANCH_NAME }} # Update the branch name as needed
