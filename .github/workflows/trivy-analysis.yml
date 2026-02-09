@@ -14,7 +14,7 @@ on:
 jobs:
   build-scan-image:
     name: Build & Scan Image
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     env:
       BASIC_AUTH_USER: ${{ secrets.BASIC_AUTH_USER }}
       BASIC_AUTH_PASS: ${{ secrets.BASIC_AUTH_PASS }}
@@ -36,7 +36,7 @@ jobs:
 
       # TODO REMOVE AFTER SFTP IS IN MAVEN CENTRAL
       - name: Build Spring SFTP Starter
-        run: mvn install -P all --file ./spring-boot-starters/src/pom.xml
+        run: mvn install -P all --file ./spring-boot-starters/src/pom.xml -DskipTests
 
       - name: Checkout code
         uses: actions/checkout@v3
@@ -74,7 +74,7 @@ jobs:
 
       #Upload results to the Github security tab.
       - name: Upload Trivy scan results to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@v2
+        uses: github/codeql-action/upload-sarif@v3
         if: always()
         with:
           sarif_file: trivy-results.sarif
