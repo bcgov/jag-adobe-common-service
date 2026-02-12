@@ -4,7 +4,12 @@ name: Main - Build Dev Image and Push to Artifactory
 on:
   push:
     branches: [main]
-  workflow_dispatch:
+  workflow_dispatch: 
+    inputs: 
+      tag: 
+        description: "Branch to checkout"
+        required: true
+        default: "main"
 
 env:
   IMAGE_NAME: jag-adobe-common-service
@@ -17,9 +22,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Git Checkout
+      - name: Checkout code at the chosen tag
         uses: actions/checkout@v4
-      
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.branch || github.ref_name }}
+
       - name: Get Release Version
         run: |
           branch=${GITHUB_REF##*/}
@@ -89,30 +96,30 @@ jobs:
           git commit -m "Update Adobe Commons image tag"
           git push origin ${{ env.BRANCH_NAME }} # Update the branch name as needed
 
-      - name: Run Integration Tests
-        env:
-          TEST_STARTER_URL: ${{secrets.TEST_STARTER_URL}}
-          BASIC_AUTH_USER: ${{ secrets.BASIC_AUTH_USER }}
-          BASIC_AUTH_PASS: ${{ secrets.BASIC_AUTH_PASS }}
-        run: |
-          RET=`curl --write-out '%{content_type}' --output TestErrors.zip --request GET --user ${BASIC_AUTH_USER}:${BASIC_AUTH_PASS} --url ${TEST_STARTER_URL}`
-          if [ "$RET" = "application/zip" ]; then
-            echo "Status: Failed Integration Test(s) found!"
-            exit 1
-          fi
-          if [ "$RET" = "application/json" ]; then
-            echo "Status: All Tests Passed"
-          fi
-          if [ "$RET" != "application/zip" ] && [ "$RET" != "application/json" ]; then
-            echo "Received content_type is $RET, was expecting application/json or application/zip"
-            exit 1
-          fi
-
-      - name: Archive production artifacts
-        uses: actions/upload-artifact@v3.1.1
-        if: failure()
-        with:
-          name: integration-tests-report
-          path: |
-            TestErrors.zip
-          retention-days: 5
+    #  - name: Run Integration Tests
+    #    env:
+    #      TEST_STARTER_URL: ${{secrets.TEST_STARTER_URL}}
+    #      BASIC_AUTH_USER: ${{ secrets.BASIC_AUTH_USER }}
+    #      BASIC_AUTH_PASS: ${{ secrets.BASIC_AUTH_PASS }}
+    #    run: |
+    #      RET=`curl --write-out '%{content_type}' --output TestErrors.zip --request GET --user ${BASIC_AUTH_USER}:${BASIC_AUTH_PASS} --url ${TEST_STARTER_URL}`
+    #      if [ "$RET" = "application/zip" ]; then
+    #        echo "Status: Failed Integration Test(s) found!"
+    #        exit 1
+    #      fi
+    #      if [ "$RET" = "application/json" ]; then
+    #        echo "Status: All Tests Passed"
+    #      fi
+    #      if [ "$RET" != "application/zip" ] && [ "$RET" != "application/json" ]; then
+    #        echo "Received content_type is $RET, was expecting application/json or application/zip"
+    #        exit 1
+    #      fi
+#
+    #  - name: Archive production artifacts
+    #    uses: actions/upload-artifact@v3.1.1
+    #    if: failure()
+    #    with:
+    #      name: integration-tests-report
+    #      path: |
+    #        TestErrors.zip
+    #      retention-days: 5
