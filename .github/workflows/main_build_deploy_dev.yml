@@ -87,7 +87,7 @@ jobs:
           
           # Repackage Helm Chart      
 
-          cd gitops
+          cd doc-utils-gitops
 
           helm dependency build
           
