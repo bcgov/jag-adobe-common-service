@@ -1,4 +1,6 @@
 name: Main - Action for PROD Deployment
+permissions:
+  contents: write
 
 on:
   workflow_dispatch:
