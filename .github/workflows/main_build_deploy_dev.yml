@@ -58,6 +58,17 @@ jobs:
         run: |
           docker push artifacts.developer.gov.bc.ca/d735-adobe-common-service/${{env.IMAGE_NAME}}:${{env.ENV_TAG}}
 
+      #   Run Vulnerability Scan usinig Trivy scanner
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: image
+          image-ref: artifacts.developer.gov.bc.ca/d735-adobe-common-service/${{ env.IMAGE_NAME }}:${{env.ENV_TAG}}
+          format: 'table'
+          ignore-unfixed: true
+          limit-severities-for-sarif: true
+          severity: HIGH,CRITICAL
+
       - name: Set GitOps SSH Key
         uses: webfactory/ssh-agent@v0.5.4
         with:
@@ -87,7 +98,7 @@ jobs:
           
           # Repackage Helm Chart      
 
-          cd gitops
+          cd doc-utils-gitops
 
           helm dependency build
           
