@@ -1,6 +1,9 @@
 
 name: Build and Test Application
 
+permissions:
+  contents: read
+  
 # Triggers that controls when the workflow will run
 on:
   push:
