@@ -13,23 +13,26 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class InstantDeserializer extends JsonDeserializer<Instant> {
+
+    private static final String GMT_7 = "GMT-7";
+
     @Override
     public Instant deserialize(JsonParser jsonParser, DeserializationContext deserializationContext)
             throws IOException {
         try {
             if (jsonParser.getText().split("-")[0].length() < 4) {
                 var sfd = new SimpleDateFormat("dd-MMM-yy hh.mm.ss.SSSSSS a", Locale.US);
-                sfd.setTimeZone(TimeZone.getTimeZone("GMT-7"));
+                sfd.setTimeZone(TimeZone.getTimeZone(GMT_7));
                 return sfd.parse(jsonParser.getText()).toInstant();
             } else {
                 var sfd = new SimpleDateFormat("yyyy-MMM-dd", Locale.US);
-                sfd.setTimeZone(TimeZone.getTimeZone("GMT-7"));
+                sfd.setTimeZone(TimeZone.getTimeZone(GMT_7));
                 return sfd.parse(jsonParser.getText()).toInstant();
             }
         } catch (ParseException e) {
             try {
                 var sfd = new SimpleDateFormat("dd-MMM-yy", Locale.US);
-                sfd.setTimeZone(TimeZone.getTimeZone("GMT-7"));
+                sfd.setTimeZone(TimeZone.getTimeZone(GMT_7));
                 return sfd.parse(jsonParser.getText()).toInstant();
             } catch (ParseException e2) {
                 log.error(e2.getLocalizedMessage());
@@ -37,4 +40,5 @@ public class InstantDeserializer extends JsonDeserializer<Instant> {
         }
         return null;
     }
+
 }

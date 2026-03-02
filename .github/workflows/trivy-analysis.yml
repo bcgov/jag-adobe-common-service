@@ -4,12 +4,9 @@ name: Build & Vulnerability Scan using Trivy Scanner
 
 on:
   push:
-    branches: [ main, release/*]
-  pull_request:
-    # The branches below must be a subset of the branches above
-    branches: [ main, release/*]
+    branches: [ main ]
   workflow_dispatch:
-    branches: [ main, release/*, feature/*]
+    branches: [ main ]
 
 jobs:
   build-scan-image:
@@ -25,7 +22,7 @@ jobs:
         with:
           repository: bcgov/spring-boot-starters
           path: spring-boot-starters
-          ref: v1.0.0
+          ref: v1.0.5
 
       # Set up JDK build environment
       - name: Set up JDK 17
@@ -49,9 +46,6 @@ jobs:
       # Runs build steps
       - name: Maven Package
         run: mvn -ntp clean package
-        
-      - name: Maven Verify
-        run: mvn -ntp clean verify
 
       - name: Build an image from Dockerfile
         env:

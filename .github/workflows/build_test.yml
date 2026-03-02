@@ -1,0 +1,57 @@
+
+name: Build and Test Application
+
+permissions:
+  contents: read
+  
+# Triggers that controls when the workflow will run
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      FILE_COUNTER: 0
+      BASIC_AUTH_USER: ${{ secrets.BASIC_AUTH_USER }}
+      BASIC_AUTH_PASS: ${{ secrets.BASIC_AUTH_PASS }}
+      ACTION_DEBUG: true
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      - name: Checkout Spring SFTP Starter Repository
+        uses: actions/checkout@v3
+        with:
+          repository: bcgov/spring-boot-starters
+          path: spring-boot-starters
+          ref: v1.0.5
+
+      # Set up JDK build environment
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: 17
+
+      # TODO REMOVE AFTER SFTP IS IN MAVEN CENTRAL
+      - name: Build Spring SFTP Starter
+        run: mvn install -P all --file ./spring-boot-starters/src/pom.xml
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v1
+        with:
+          java-version: 17
+
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Runs build steps
+      - name: Maven Package
+        run: mvn -ntp clean package
+
+ 

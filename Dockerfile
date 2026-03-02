@@ -6,7 +6,7 @@ RUN git clone https://github.com/bcgov/spring-boot-starters.git
 
 WORKDIR /libs/spring-boot-starters
 
-RUN git checkout v1.0.0  && \
+RUN git checkout v1.0.5  && \
     mvn install -P all -f src/pom.xml
 
 WORKDIR /

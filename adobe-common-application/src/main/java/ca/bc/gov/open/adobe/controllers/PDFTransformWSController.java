@@ -10,7 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.util.Base64Utils;
+import org.apache.commons.codec.binary.Base64;
 import org.springframework.ws.client.core.WebServiceTemplate;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
@@ -22,7 +22,7 @@ import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 public class PDFTransformWSController {
 
     @Value("${adobe.lifecycle-host}")
-    private String host = "https://127.0.0.1/";
+    private final String host = "https://127.0.0.1/";
 
     private static final String SOAP_NAMESPACE =
             "http://brooks/AdobeCommonServices.Source.CommonServices.ws.provider:PDFTransformationsWS";
@@ -53,8 +53,7 @@ public class PDFTransformWSController {
             out.setStatusVal(1);
             out.setStatusMsg("ok");
 
-            String pdf = Base64Utils.encodeToString(resp.getPDFTransformationsReturn());
-
+            String pdf = Base64.encodeBase64String(resp.getPDFTransformationsReturn());
             out.setOutputFile(pdf);
 
             log.info(
@@ -91,7 +90,7 @@ public class PDFTransformWSController {
             out.setStatusVal(1);
             out.setStatusMsg("ok");
 
-            String pdf = Base64Utils.encodeToString(resp.getPDFTransformationsReturn());
+            String pdf = Base64.encodeBase64String(resp.getPDFTransformationsReturn());
 
             out.setOutputFile(pdf);
 
