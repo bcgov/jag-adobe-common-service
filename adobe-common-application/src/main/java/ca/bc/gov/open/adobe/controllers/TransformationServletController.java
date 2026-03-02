@@ -12,6 +12,7 @@ import com.itextpdf.text.pdf.PdfReader;
 import com.itextpdf.text.pdf.XfaForm;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.URISyntaxException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import jakarta.servlet.annotation.WebServlet;
@@ -20,6 +21,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.xml.soap.MimeHeaders;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.http.client.utils.URIBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -63,7 +66,7 @@ public class TransformationServletController extends HttpServlet {
             @RequestHeader(value = "x-correlation-id", required = false) String correlationId,
             TransformationServletRequest servletRequest,
             HttpServletResponse response)
-            throws IOException {
+            throws IOException, URISyntaxException {
         if (!isValidOptions(servletRequest.getOptions())) {
             String errMsg =
                     "Transformation options must be a summation of allowable values: 1, 2, 4, 8, 32 or 64.";
@@ -74,10 +77,11 @@ public class TransformationServletController extends HttpServlet {
         // Fetch file
         ResponseEntity<byte[]> resp = null;
         LocalDateTime startTime = LocalDateTime.now();
+        URIBuilder uri =  new URIBuilder(servletRequest.getUrl());
         try {
             resp =
                     restTemplate.exchange(
-                            servletRequest.getUrl(),
+                            uri.toString(),
                             HttpMethod.GET,
                             new HttpEntity<>(new HttpHeaders()),
                             byte[].class);
