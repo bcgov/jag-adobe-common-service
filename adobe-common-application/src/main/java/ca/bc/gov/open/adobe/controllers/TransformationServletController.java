@@ -19,11 +19,11 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.xml.soap.MimeHeaders;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
-import org.springframework.util.Base64Utils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
@@ -142,7 +142,7 @@ public class TransformationServletController extends HttpServlet {
             return;
         }
 
-        String bs64 = Base64Utils.encodeToString(resp.getBody());
+        String bs64 = Base64.encodeBase64String(resp.getBody());
         ca.bc.gov.open.adobe.gateway.PDFTransformations request =
                 new ca.bc.gov.open.adobe.gateway.PDFTransformations();
         request.setFlags(Integer.valueOf(servletRequest.getOptions()));

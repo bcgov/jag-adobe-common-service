@@ -25,7 +25,7 @@ jobs:
         with:
           repository: bcgov/spring-boot-starters
           path: spring-boot-starters
-          ref: v1.0.0
+          ref: v1.0.5
 
       # Set up JDK build environment
       - name: Set up JDK 17

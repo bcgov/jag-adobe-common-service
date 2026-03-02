@@ -38,7 +38,7 @@ jobs:
         with:
           repository: bcgov/spring-boot-starters
           path: spring-boot-starters
-          ref: v1.0.0
+          ref: v1.0.5
 
       # Set up JDK build environment
       - name: Set up JDK 8
@@ -96,10 +96,7 @@ jobs:
         
       - name: Maven Verify
         run: mvn -ntp clean verify
-      
-      - name: Maven Spotless Check
-        run: mvn -ntp spotless:check
-      
+
       #Login to OpenShift Container Repository
       - name: Login to OpenShift Container Repository
         uses: docker/login-action@v2

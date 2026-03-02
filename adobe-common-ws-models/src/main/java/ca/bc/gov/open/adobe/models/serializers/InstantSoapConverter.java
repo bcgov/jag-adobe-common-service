@@ -13,15 +13,17 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public final class InstantSoapConverter {
 
+    private static final String GMT_7 = "GMT-7";
+
     private InstantSoapConverter() {}
 
     public static String print(Instant value) {
-        String out =
-                DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.0")
-                        .withZone(ZoneId.of("GMT-7"))
-                        .withLocale(Locale.US)
-                        .format(value);
-        return out;
+
+        return DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.0")
+                .withZone(ZoneId.of(GMT_7))
+                .withLocale(Locale.US)
+                .format(value);
+
     }
 
     public static Instant parse(String value) {
@@ -31,12 +33,12 @@ public final class InstantSoapConverter {
             try {
                 // Date time parser
                 var sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSSSS", Locale.US);
-                sdf.setTimeZone(TimeZone.getTimeZone("GMT-7"));
+                sdf.setTimeZone(TimeZone.getTimeZone(GMT_7));
                 d = sdf.parse(value);
             } catch (ParseException ex) {
                 try {
                     var sdf = new SimpleDateFormat("dd-MMM-yy", Locale.US);
-                    sdf.setTimeZone(TimeZone.getTimeZone("GMT-7"));
+                    sdf.setTimeZone(TimeZone.getTimeZone(GMT_7));
                     d = sdf.parse(value);
                 } catch (ParseException ex2) {
                     return Instant.parse(value + "Z");
