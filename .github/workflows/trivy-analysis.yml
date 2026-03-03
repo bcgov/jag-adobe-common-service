@@ -37,8 +37,8 @@ jobs:
       #- name: Build Spring SFTP Starter
       #  run: mvn install -P all --file ./spring-boot-starters/src/pom.xml -DskipTests
 
-      #- name: Checkout code
-      #  uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
       #- name: Setup ssh infra
       #  run: |
