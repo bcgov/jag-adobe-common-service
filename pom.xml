@@ -11,7 +11,7 @@
     </parent>
     <groupId>ca.bc.gov.open</groupId>
     <artifactId>jag-adobe-common-service</artifactId>
-    <version>2.0.2-SNAPSHOT</version>
+    <version>2.0.2</version>
     <name>jag-adobe-common-service</name>
     <description>adobe-common-service Application</description>
     <properties>
